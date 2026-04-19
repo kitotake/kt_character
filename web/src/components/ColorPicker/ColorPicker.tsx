@@ -1,4 +1,4 @@
-import styles from "./ColorPicker.module.sass";
+import styles from "./ColorPicker.module.scss";
 
 // GTA V hair color palette (indices 0–63 approximated)
 const HAIR_COLORS: string[] = [

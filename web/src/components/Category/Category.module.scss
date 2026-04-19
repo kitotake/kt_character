@@ -1,3 +1,6 @@
+////@use "../style/variables.scss" as *;
+//@use "../style/mixins.scss" as *;
+
 @use "../../style/variables" as *;
 @use "../../style/mixins" as *;
 
@@ -9,7 +12,7 @@
   border: 1px solid rgba(0, 217, 255, 0.08);
   border-radius: $radius-sm;
   transition: $transition;
-
+  
   &:hover {
     background: rgba(0, 217, 255, 0.06);
     border-color: rgba(0, 217, 255, 0.15);

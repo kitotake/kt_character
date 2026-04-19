@@ -1,4 +1,4 @@
-import styles from "./Slider.module.sass";
+import styles from "./Slider.module.scss";
 
 interface SliderProps {
   label: string;

@@ -1,220 +1,281 @@
-@use "../style/variables" as *
-@use "../style/mixins" as *
+@use "../style/variables.scss" as *;
+@use "../style/mixins.scss" as *;
 
-.dashboard
-  display: grid
-  grid-template-columns: 260px 1fr
-  min-height: 100vh
-  background: $bg
-  overflow: hidden
+.dashboard {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+  background: $bg;
+  overflow: hidden;
 
-// ─── Sidebar ──────────────────────────────────────────────
-.sidebar
-  background: rgba(255, 255, 255, 0.02)
-  border-right: 1px solid rgba(255, 255, 255, 0.06)
-  @include flex-col(0)
-  overflow-y: auto
-  scrollbar-width: none
-  &::-webkit-scrollbar
-    display: none
+  @include responsive-breakpoint("lg") {
+    grid-template-columns: 1fr;
+  }
+}
 
-.previewSection
-  @include flex-col($spacing-md)
-  padding: $spacing-lg
+// ── SIDEBAR ───────────────────────────────────────────────────────────────
+.sidebar {
+  background: rgba(255, 255, 255, 0.02);
+  border-right: 1px solid rgba(0, 217, 255, 0.1);
+  @include flex-col(0);
+  overflow-y: auto;
+  scrollbar-width: none;
 
-.previewCard
-  border-radius: $radius
-  overflow: hidden
-  border: 1px solid rgba(255, 255, 255, 0.08)
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
-.statsCard
-  background: rgba(255, 255, 255, 0.03)
-  border: 1px solid rgba(255, 255, 255, 0.06)
-  border-radius: $radius
-  padding: $spacing-md
+  @include responsive-breakpoint("lg") {
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+    grid-column: 1 / -1;
+  }
+}
 
-  h3
-    font-size: 11px
-    font-weight: 700
-    letter-spacing: 0.1em
-    text-transform: uppercase
-    color: $muted
-    margin-bottom: $spacing-sm
+.previewSection {
+  @include flex-col($spacing-md);
+  padding: $spacing-lg;
+}
 
-.statRow
-  @include flex-row($spacing-sm)
-  justify-content: space-between
-  align-items: center
-  padding: 6px 0
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04)
-  font-size: 12px
+.previewCard {
+  border-radius: $radius;
+  overflow: hidden;
+  border: 1px solid rgba(0, 217, 255, 0.1);
+  box-shadow: inset 0 0 20px rgba(0, 217, 255, 0.05);
+}
 
-  &:last-child
-    border-bottom: none
+.statsCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 217, 255, 0.08);
+  border-radius: $radius;
+  padding: $spacing-md;
 
-  span
-    color: $muted
+  h3 {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $muted;
+    margin-bottom: $spacing-sm;
+  }
+}
 
-  strong
-    color: $text
-    font-weight: 600
+.statRow {
+  @include flex-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.04);
+  font-size: $font-size-sm;
 
-.quickActions
-  @include flex-row($spacing-sm)
-  flex-wrap: wrap
+  &:last-child {
+    border-bottom: none;
+  }
 
-.actionBtn
-  flex: 1
-  background: rgba(255, 255, 255, 0.04) !important
-  border: 1px solid rgba(255, 255, 255, 0.08) !important
-  color: $text-secondary !important
-  font-size: 11px !important
-  padding: 8px 6px !important
-  @include flex-col(4px)
-  align-items: center
-  gap: 4px !important
-  transform: none !important
-  box-shadow: none !important
+  span {
+    color: $muted;
+  }
 
-  &:hover
-    background: rgba(108, 92, 231, 0.1) !important
-    border-color: rgba(108, 92, 231, 0.3) !important
-    color: $accent !important
-    transform: none !important
-    box-shadow: none !important
+  strong {
+    color: $text;
+    font-weight: $font-weight-semibold;
+  }
+}
 
-  span
-    font-size: 10px
+.quickActions {
+  @include flex-row($spacing-sm);
+  flex-wrap: wrap;
+}
 
-// ─── Main Content ──────────────────────────────────────────
-.main
-  @include flex-col(0)
-  overflow: hidden
+.actionBtn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(0, 217, 255, 0.08) !important;
+  color: $text-secondary !important;
+  font-size: $font-size-xs !important;
+  padding: 8px 6px !important;
+  @include flex-col(4px);
+  align-items: center;
+  gap: 4px !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-.header
-  @include flex-row($spacing-md)
-  justify-content: space-between
-  align-items: center
-  padding: $spacing-lg $spacing-xl
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06)
-  flex-shrink: 0
+  &:hover {
+    background: rgba(0, 217, 255, 0.1) !important;
+    border-color: rgba(0, 217, 255, 0.3) !important;
+    color: $accent !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
 
-.headerContent
-  h1
-    font-size: 22px
-    font-weight: 700
-    color: $text
-    letter-spacing: -0.5px
+  span {
+    font-size: $font-size-xs;
+  }
+}
 
-  p
-    font-size: 12px
-    color: $muted
-    margin-top: 2px
+// ── MAIN CONTENT ──────────────────────────────────────────────────────────
+.main {
+  @include flex-col(0);
+  overflow: hidden;
+}
 
-.headerActions
-  @include flex-row($spacing-sm)
+.header {
+  @include flex-between;
+  align-items: center;
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+  flex-shrink: 0;
+  background: $panel;
+}
 
-.iconBtn
-  background: rgba(255, 255, 255, 0.04) !important
-  border: 1px solid rgba(255, 255, 255, 0.08) !important
-  color: $muted !important
-  width: 36px !important
-  height: 36px !important
-  padding: 0 !important
-  border-radius: $radius-sm !important
-  display: flex !important
-  align-items: center !important
-  justify-content: center !important
-  transform: none !important
-  box-shadow: none !important
+.headerContent {
+  h1 {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $text;
+    letter-spacing: -0.5px;
+  }
 
-  &:hover
-    background: rgba(108, 92, 231, 0.12) !important
-    border-color: rgba(108, 92, 231, 0.3) !important
-    color: $accent !important
-    transform: none !important
-    box-shadow: none !important
+  p {
+    font-size: $font-size-sm;
+    color: $muted;
+    margin-top: 2px;
+  }
+}
 
-// ─── Messages ─────────────────────────────────────────────
-.errorMessage
-  background: rgba($error, 0.1)
-  border: 1px solid rgba($error, 0.3)
-  color: $error
-  padding: $spacing-sm $spacing-lg
-  font-size: 12px
-  animation: slideDown 0.2s ease
+.headerActions {
+  @include flex-row($spacing-sm);
+}
 
-.successMessage
-  background: rgba($success, 0.1)
-  border: 1px solid rgba($success, 0.3)
-  color: $success
-  padding: $spacing-sm $spacing-lg
-  font-size: 12px
-  font-weight: 500
-  animation: slideDown 0.2s ease
+.iconBtn {
+  background: rgba(0, 217, 255, 0.08) !important;
+  border: 1px solid rgba(0, 217, 255, 0.15) !important;
+  color: $accent !important;
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  border-radius: $radius-sm !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-@keyframes slideDown
-  from
-    opacity: 0
-    transform: translateY(-8px)
-  to
-    opacity: 1
-    transform: translateY(0)
+  &:hover {
+    background: rgba(0, 217, 255, 0.15) !important;
+    border-color: $accent !important;
+    color: $accent-light !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 217, 255, 0.25) !important;
+  }
+}
 
-// ─── Content ──────────────────────────────────────────────
-.content
-  flex: 1
-  overflow-y: auto
-  padding: $spacing-lg $spacing-xl
-  scrollbar-width: thin
-  scrollbar-color: rgba(108, 92, 231, 0.3) transparent
+// ── MESSAGES ──────────────────────────────────────────────────────────────
+.errorMessage {
+  background: rgba($error, 0.1);
+  border: 1px solid rgba($error, 0.3);
+  color: #ff6b6b;
+  padding: $spacing-sm $spacing-lg;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  animation: slideDown 0.2s ease;
+}
 
-  &::-webkit-scrollbar
-    width: 4px
+.successMessage {
+  background: rgba($success, 0.1);
+  border: 1px solid rgba($success, 0.3);
+  color: #51cf66;
+  padding: $spacing-sm $spacing-lg;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  animation: slideDown 0.2s ease;
+}
 
-  &::-webkit-scrollbar-thumb
-    background: rgba(108, 92, 231, 0.3)
-    border-radius: 2px
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-// ─── Fullscreen Preview ────────────────────────────────────
-.fullscreenPreview
-  position: fixed
-  inset: 0
-  background: rgba(0, 0, 0, 0.85)
-  backdrop-filter: blur(12px)
-  z-index: 1000
-  display: flex
-  align-items: center
-  justify-content: center
-  animation: fadeIn 0.2s ease
+// ── CONTENT ───────────────────────────────────────────────────────────────
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-lg $spacing-xl;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 217, 255, 0.3) transparent;
 
-.closePreview
-  position: absolute
-  top: $spacing-lg
-  right: $spacing-lg
-  background: rgba(255, 255, 255, 0.1) !important
-  border: 1px solid rgba(255, 255, 255, 0.15) !important
-  color: $text !important
-  width: 40px !important
-  height: 40px !important
-  border-radius: 50% !important
-  font-size: 16px !important
-  display: flex !important
-  align-items: center !important
-  justify-content: center !important
-  transform: none !important
-  box-shadow: none !important
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
 
-  &:hover
-    background: rgba(255, 255, 255, 0.2) !important
-    transform: none !important
-    box-shadow: none !important
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, 0.3);
+    border-radius: 2px;
 
-.previewContent
-  width: 300px
+    &:hover {
+      background: rgba(0, 217, 255, 0.5);
+    }
+  }
+}
 
-@keyframes fadeIn
-  from
-    opacity: 0
-  to
-    opacity: 1
+// ── FULLSCREEN PREVIEW ────────────────────────────────────────────────────
+.fullscreenPreview {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: $z-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.closePreview {
+  position: absolute;
+  top: $spacing-lg;
+  right: $spacing-lg;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: $text !important;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  font-size: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: none !important;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3) !important;
+  }
+}
+
+.previewContent {
+  width: 300px;
+
+  @include responsive-breakpoint("md") {
+    width: 250px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,15 +1,24 @@
-import styles from "./ExportAdvanced.module.sass";
+import styles from "./ExportAdvanced.module.scss";
 import { useState } from "react";
 import { Download, Copy, CheckCircle2 } from "lucide-react";
 
+interface Preset {
+  id: number;
+  name: string;
+  data: {
+    hair: number;
+    beard: number;
+    hairColor: number;
+  };
+  createdAt: string;
+}
+
 interface ExportAdvancedProps {
-  data: any;
-  presets: any[];
+  presets: Preset[];
   onClose: () => void;
 }
 
 export default function ExportAdvanced({
-  data,
   presets,
   onClose,
 }: ExportAdvancedProps) {
@@ -32,10 +41,9 @@ export default function ExportAdvanced({
       new Date(p.createdAt).toLocaleDateString(),
     ]);
 
-    return (
-      [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(","))
-        .join("\n")
-    );
+    return [headers, ...rows]
+      .map((row) => row.map((cell) => `"${cell}"`).join(","))
+      .join("\n");
   };
 
   const generateCode = () => {

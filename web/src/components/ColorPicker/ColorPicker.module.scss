@@ -1,5 +1,9 @@
+//@use "../style/variables.scss" as *;
+//@use "../style/mixins.scss" as *;
+
 @use "../../style/variables" as *;
 @use "../../style/mixins" as *;
+
 
 .wrapper {
   @include flex-col(10px);

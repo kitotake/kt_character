@@ -1,215 +1,252 @@
-@use "../../style/variables" as *
-@use "../../style/mixins" as *
+@use "../style/variables.scss" as *;
+@use "../style/mixins.scss" as *;
 
-// ─── Overlay ──────────────────────────────────────────────────────────────────
+// ── OVERLAY ────────────────────────────────────────────────────────────────
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: $z-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
 
-.overlay
-  position: fixed
-  inset: 0
-  background: rgba(0, 0, 0, 0.75)
-  backdrop-filter: blur(8px)
-  z-index: 1000
-  display: flex
-  align-items: center
-  justify-content: center
-  animation: fadeIn 0.2s ease
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
-@keyframes fadeIn
-  from
-    opacity: 0
-  to
-    opacity: 1
+// ── MODAL ──────────────────────────────────────────────────────────────────
+.modal {
+  background: $panel;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius;
+  width: 520px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: $shadow-lg;
+  animation: slideUp 0.25s ease;
+}
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-.modal
-  background: $panel
-  border: 1px solid rgba(255, 255, 255, 0.08)
-  border-radius: $radius
-  width: 520px
-  max-width: 90vw
-  max-height: 80vh
-  overflow-y: auto
-  box-shadow: $shadow-lg
-  animation: slideUp 0.25s ease
+// ── HEADER ────────────────────────────────────────────────────────────────
+.header {
+  @include flex-between;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 
-@keyframes slideUp
-  from
-    opacity: 0
-    transform: translateY(16px)
-  to
-    opacity: 1
-    transform: translateY(0)
+  h2 {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $text;
+  }
+}
 
-// ─── Header ───────────────────────────────────────────────────────────────────
+.closeBtn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: $muted !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: $radius-sm !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-.header
-  @include flex-row($spacing-sm)
-  justify-content: space-between
-  align-items: center
-  padding: $spacing-lg
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06)
+  &:hover {
+    background: rgba($error, 0.15) !important;
+    border-color: rgba($error, 0.3) !important;
+    color: $error !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
 
-  h2
-    font-size: 16px
-    font-weight: 700
-    color: $text
+// ── PRESET GRID (SELECTION SCREEN) ────────────────────────────────────────
+.presetGrid {
+  padding: $spacing-lg;
+  @include flex-col($spacing-sm);
+}
 
-.closeBtn
-  background: rgba(255, 255, 255, 0.06) !important
-  border: 1px solid rgba(255, 255, 255, 0.1) !important
-  color: $muted !important
-  width: 32px !important
-  height: 32px !important
-  padding: 0 !important
-  border-radius: $radius-sm !important
-  display: flex !important
-  align-items: center !important
-  justify-content: center !important
-  transform: none !important
-  box-shadow: none !important
+.compareGroup {
+  @include flex-col($spacing-sm);
+}
 
-  &:hover
-    background: rgba(231, 76, 60, 0.15) !important
-    border-color: rgba(231, 76, 60, 0.3) !important
-    color: $error !important
-    transform: none !important
-    box-shadow: none !important
+.presetCard {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: $radius-sm !important;
+  padding: $spacing-md !important;
+  text-align: left;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+  @include flex-col(6px);
 
-// ─── Preset Grid (selection screen) ───────────────────────────────────────────
+  &:hover {
+    background: rgba(0, 217, 255, 0.08) !important;
+    border-color: rgba(0, 217, 255, 0.3) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
 
-.presetGrid
-  padding: $spacing-lg
-  @include flex-col($spacing-sm)
+  &.vs {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-style: dashed !important;
+  }
+}
 
-.compareGroup
-  @include flex-col($spacing-sm)
+.name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $text;
+  margin: 0;
+}
 
-.presetCard
-  width: 100%
-  background: rgba(255, 255, 255, 0.03) !important
-  border: 1px solid rgba(255, 255, 255, 0.08) !important
-  border-radius: $radius-sm !important
-  padding: $spacing-md !important
-  text-align: left
-  cursor: pointer
-  transition: $transition-fast !important
-  transform: none !important
-  box-shadow: none !important
-  @include flex-col(6px)
+.preview {
+  @include flex-row($spacing-md);
+}
 
-  &:hover
-    background: rgba(108, 92, 231, 0.08) !important
-    border-color: rgba(108, 92, 231, 0.3) !important
-    transform: none !important
-    box-shadow: none !important
+.stat {
+  font-size: $font-size-sm;
+  color: $muted;
 
-  &.vs
-    background: rgba(255, 255, 255, 0.02) !important
-    border-style: dashed !important
+  strong {
+    color: $text-secondary;
+  }
+}
 
-.name
-  font-size: 14px
-  font-weight: 700
-  color: $text
-  margin: 0
+// ── COMPARISON VIEW ───────────────────────────────────────────────────────
+.comparison {
+  @include flex-row(0);
+  padding: $spacing-lg;
+}
 
-.preview
-  @include flex-row($spacing-md)
+.side {
+  flex: 1;
+  @include flex-col($spacing-sm);
 
-.stat
-  font-size: 12px
-  color: $muted
+  h3 {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $text;
+    margin-bottom: $spacing-sm;
+  }
+}
 
-  strong
-    color: $text-secondary
+.divider {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0 $spacing-lg;
+}
 
-// ─── Comparison View ──────────────────────────────────────────────────────────
+.stats {
+  @include flex-col(6px);
+}
 
-.comparison
-  @include flex-row(0)
-  padding: $spacing-lg
+// ── STAT ROW IN COMPARISON ────────────────────────────────────────────────
+.stat {
+  @include flex-between;
+  align-items: center;
+  padding: 8px $spacing-sm;
+  border-radius: $radius-sm;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: $font-size-sm;
+  transition: $transition;
 
-.side
-  flex: 1
-  @include flex-col($spacing-sm)
+  span {
+    color: $muted;
+  }
 
-  h3
-    font-size: 15px
-    font-weight: 700
-    color: $text
-    margin-bottom: $spacing-sm
+  strong {
+    font-weight: $font-weight-bold;
+    font-size: $font-size-md;
+  }
+}
 
-.divider
-  width: 1px
-  background: rgba(255, 255, 255, 0.06)
-  margin: 0 $spacing-lg
+// ── DIFF COLORS ───────────────────────────────────────────────────────────
+.higher {
+  border-color: rgba($success, 0.3) !important;
+  background: rgba($success, 0.06) !important;
 
-.stats
-  @include flex-col(6px)
+  strong {
+    color: $success;
+  }
+}
 
-// Stat row in comparison
-.stat
-  @include flex-row($spacing-sm)
-  justify-content: space-between
-  align-items: center
-  padding: 8px $spacing-sm
-  border-radius: $radius-sm
-  background: rgba(255, 255, 255, 0.02)
-  border: 1px solid rgba(255, 255, 255, 0.04)
-  font-size: 12px
-  transition: $transition-fast
+.lower {
+  border-color: rgba($error, 0.3) !important;
+  background: rgba($error, 0.06) !important;
 
-  span
-    color: $muted
+  strong {
+    color: $error;
+  }
+}
 
-  strong
-    font-weight: 700
-    font-size: 13px
+.equal {
+  strong {
+    color: $text-secondary;
+  }
+}
 
-// Diff colors
-.higher
-  border-color: rgba(39, 174, 96, 0.3) !important
-  background: rgba(39, 174, 96, 0.06) !important
-  strong
-    color: $success
+// ── ACTIONS ───────────────────────────────────────────────────────────────
+.actions {
+  @include flex-row($spacing-sm);
+  justify-content: flex-end;
+  padding: $spacing-md $spacing-lg;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
 
-.lower
-  border-color: rgba(231, 76, 60, 0.3) !important
-  background: rgba(231, 76, 60, 0.06) !important
-  strong
-    color: $error
+.backBtn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: $text-secondary !important;
+  font-size: $font-size-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-.equal
-  strong
-    color: $text-secondary
+  &:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
 
-// ─── Actions ──────────────────────────────────────────────────────────────────
+.closeActionBtn {
+  font-size: $font-size-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-.actions
-  @include flex-row($spacing-sm)
-  justify-content: flex-end
-  padding: $spacing-md $spacing-lg
-  border-top: 1px solid rgba(255, 255, 255, 0.06)
-
-.backBtn
-  background: rgba(255, 255, 255, 0.06) !important
-  border: 1px solid rgba(255, 255, 255, 0.1) !important
-  color: $text-secondary !important
-  font-size: 13px !important
-  transform: none !important
-  box-shadow: none !important
-
-  &:hover
-    background: rgba(255, 255, 255, 0.1) !important
-    transform: none !important
-    box-shadow: none !important
-
-.closeActionBtn
-  font-size: 13px !important
-  transform: none !important
-  box-shadow: none !important
-
-  &:hover
-    transform: none !important
-    box-shadow: none !important
+  &:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

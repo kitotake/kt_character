@@ -1,0 +1,196 @@
+@use "../../style/variables.scss" as *;
+@use "../../style/mixins.scss" as *;
+
+.section {
+  @include flex-col($spacing-sm);
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid rgba(0, 217, 255, 0.1);
+}
+
+.header {
+  @include flex-between;
+  align-items: center;
+}
+
+.title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+.addBtn {
+  background: rgba(0, 217, 255, 0.15) !important;
+  border: 1px solid rgba(0, 217, 255, 0.3) !important;
+  color: $accent !important;
+  font-size: $font-size-xs !important;
+  padding: 4px 10px !important;
+  height: auto !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.3) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.empty {
+  text-align: center;
+  padding: $spacing-md;
+  color: $muted;
+  font-size: $font-size-sm;
+  background: rgba(0, 217, 255, 0.04);
+  border-radius: $radius-sm;
+  border: 1px dashed rgba(0, 217, 255, 0.08);
+}
+
+.list {
+  @include flex-col(6px);
+}
+
+.item {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  padding: 10px $spacing-sm;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 217, 255, 0.08);
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: $transition;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.08);
+    border-color: rgba(0, 217, 255, 0.3);
+  }
+
+  &.selected {
+    background: rgba(0, 217, 255, 0.12);
+    border-color: rgba(0, 217, 255, 0.5);
+  }
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $muted;
+  flex-shrink: 0;
+  transition: $transition;
+
+  .selected & {
+    background: $accent;
+  }
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  font-size: $font-size-xs;
+  color: $muted;
+  margin-top: 2px;
+}
+
+.actions {
+  @include flex-row(4px);
+  flex-shrink: 0;
+}
+
+.actionBtn {
+  background: transparent !important;
+  border: none !important;
+  color: $muted !important;
+  padding: 4px !important;
+  width: 26px !important;
+  height: 26px !important;
+  min-width: unset !important;
+  border-radius: $radius-xs !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: none !important;
+  box-shadow: none !important;
+  font-size: 14px !important;
+  transition: $transition !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: $text !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  &.danger:hover {
+    background: rgba($error, 0.15) !important;
+    color: $error !important;
+  }
+}
+
+.form {
+  @include flex-row($spacing-sm);
+  margin-top: $spacing-sm;
+}
+
+.input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  color: $text;
+  border-radius: $radius-sm;
+  padding: $spacing-sm;
+  font-size: $font-size-md;
+  outline: none;
+  transition: $transition;
+
+  &::placeholder {
+    color: $muted;
+  }
+
+  &:focus {
+    border-color: $accent;
+    background: rgba(0, 217, 255, 0.06);
+  }
+}
+
+.saveBtn {
+  font-size: $font-size-sm !important;
+  padding: 8px $spacing-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.cancelBtn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: $text-secondary !important;
+  font-size: $font-size-sm !important;
+  padding: 8px $spacing-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

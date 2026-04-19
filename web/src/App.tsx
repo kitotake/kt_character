@@ -1,5 +1,5 @@
 import Creator from "./pages/Creator";
-import "./style/global.sass";
+import "./style/global.scss";
 
 export default function App() {
   return <Creator />;

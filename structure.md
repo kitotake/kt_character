@@ -6,26 +6,25 @@ kt_character/
 │   ├── components/
 │   │   ├── Category/
 │   │   ├── ColorPicker/
-│   │   ├── Comparison/         ← NEW
-│   │   ├── Dashboard/          ← NEW
-│   │   ├── ExportAdvanced/     ← NEW
+│   │   ├── Comparison/         
+│   │   ├── ExportAdvanced/     
 │   │   ├── Preview/
 │   │   ├── Presets/
 │   │   ├── Slider/
-│   │   ├── StatusBar/          ← NEW
+│   │   ├── StatusBar/          
 │   │   └── Tabs/
 │   │
 │   ├── hooks/
 │   │   ├── useLocalStorage.ts
 │   │   ├── usePresets.ts
-│   │   └── useSyncData.ts      ← NEW
+│   │   └── useSyncData.ts      
 │   │
-│   ├── services/
-│   │   └── DataSyncService.ts  ← NEW
+│   ├── services
+│   │   └── DataSyncService.ts  
 │   │
 │   ├── pages/
 │   │   ├── Creator.tsx
-│   │   └── Dashboard.tsx       ← NEW
+│   │   └── Dashboard.tsx       
 │   │
 │   ├── style/
 │   │   ├── _variables.sass

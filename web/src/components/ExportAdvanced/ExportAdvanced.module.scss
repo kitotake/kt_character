@@ -1,229 +1,258 @@
-@use "../../style/variables" as *
-@use "../../style/mixins" as *
+@use "../style/variables.scss" as *;
+@use "../style/mixins.scss" as *;
 
-// ─── Overlay ──────────────────────────────────────────────────────────────────
+// ── OVERLAY ────────────────────────────────────────────────────────────────
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: $z-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
 
-.overlay
-  position: fixed
-  inset: 0
-  background: rgba(0, 0, 0, 0.75)
-  backdrop-filter: blur(8px)
-  z-index: 1000
-  display: flex
-  align-items: center
-  justify-content: center
-  animation: fadeIn 0.2s ease
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
-@keyframes fadeIn
-  from
-    opacity: 0
-  to
-    opacity: 1
+// ── MODAL ──────────────────────────────────────────────────────────────────
+.modal {
+  background: $panel;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius;
+  width: 480px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: $shadow-lg;
+  animation: slideUp 0.25s ease;
+}
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-.modal
-  background: $panel
-  border: 1px solid rgba(255, 255, 255, 0.08)
-  border-radius: $radius
-  width: 480px
-  max-width: 90vw
-  max-height: 80vh
-  overflow: hidden
-  display: flex
-  flex-direction: column
-  box-shadow: $shadow-lg
-  animation: slideUp 0.25s ease
+// ── HEADER ────────────────────────────────────────────────────────────────
+.header {
+  @include flex-row($spacing-sm);
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
 
-@keyframes slideUp
-  from
-    opacity: 0
-    transform: translateY(16px)
-  to
-    opacity: 1
-    transform: translateY(0)
+  h2 {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $text;
+  }
+}
 
-// ─── Header ───────────────────────────────────────────────────────────────────
+.closeBtn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: $muted !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: $radius-sm !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-.header
-  @include flex-row($spacing-sm)
-  justify-content: space-between
-  align-items: center
-  padding: $spacing-lg
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06)
-  flex-shrink: 0
+  &:hover {
+    background: rgba($error, 0.15) !important;
+    color: $error !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
 
-  h2
-    font-size: 16px
-    font-weight: 700
-    color: $text
+// ── CONTENT ───────────────────────────────────────────────────────────────
+.content {
+  @include flex-col($spacing-md);
+  padding: $spacing-lg;
+  overflow-y: auto;
+  flex: 1;
+}
 
-.closeBtn
-  background: rgba(255, 255, 255, 0.06) !important
-  border: 1px solid rgba(255, 255, 255, 0.1) !important
-  color: $muted !important
-  width: 32px !important
-  height: 32px !important
-  padding: 0 !important
-  border-radius: $radius-sm !important
-  display: flex !important
-  align-items: center !important
-  justify-content: center !important
-  transform: none !important
-  box-shadow: none !important
+// ── FORMAT SELECTOR ───────────────────────────────────────────────────────
+.formatSelect {
+  @include flex-col(8px);
 
-  &:hover
-    background: rgba(231, 76, 60, 0.15) !important
-    color: $error !important
-    transform: none !important
-    box-shadow: none !important
+  label {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $muted;
+  }
+}
 
-// ─── Content ──────────────────────────────────────────────────────────────────
+.formats {
+  @include flex-row($spacing-sm);
+}
 
-.content
-  @include flex-col($spacing-md)
-  padding: $spacing-lg
-  overflow-y: auto
-  flex: 1
+.formatBtn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: $muted !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-bold !important;
+  letter-spacing: 0.06em !important;
+  padding: 8px !important;
+  border-radius: $radius-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-// Format selector
+  &:hover {
+    background: rgba(0, 217, 255, 0.1) !important;
+    border-color: rgba(0, 217, 255, 0.3) !important;
+    color: $accent !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
 
-.formatSelect
-  @include flex-col(8px)
+  &.active {
+    background: rgba(0, 217, 255, 0.15) !important;
+    border-color: $accent !important;
+    color: $accent !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
 
-  label
-    font-size: 11px
-    font-weight: 700
-    letter-spacing: 0.08em
-    text-transform: uppercase
-    color: $muted
+// ── CODE PREVIEW ──────────────────────────────────────────────────────────
+.preview {
+  @include flex-col(8px);
 
-.formats
-  @include flex-row($spacing-sm)
+  label {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: $muted;
+  }
+}
 
-.formatBtn
-  flex: 1
-  background: rgba(255, 255, 255, 0.04) !important
-  border: 1px solid rgba(255, 255, 255, 0.08) !important
-  color: $muted !important
-  font-size: 12px !important
-  font-weight: 700 !important
-  letter-spacing: 0.06em !important
-  padding: 8px !important
-  border-radius: $radius-sm !important
-  transform: none !important
-  box-shadow: none !important
-  transition: $transition-fast !important
+.code {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: $radius-sm;
+  padding: $spacing-sm;
+  overflow: auto;
+  max-height: 180px;
+  margin: 0;
 
-  &:hover
-    background: rgba(108, 92, 231, 0.1) !important
-    border-color: rgba(108, 92, 231, 0.3) !important
-    color: $accent !important
-    transform: none !important
-    box-shadow: none !important
+  code {
+    font-size: $font-size-xs;
+    color: $text-secondary;
+    font-family: $font-family-mono;
+    line-height: 1.6;
+    white-space: pre;
+    display: block;
+    padding: 0;
+    background: none;
+  }
+}
 
-  &.active
-    background: rgba(108, 92, 231, 0.15) !important
-    border-color: $accent !important
-    color: $accent !important
-    transform: none !important
-    box-shadow: none !important
+// ── STATS ─────────────────────────────────────────────────────────────────
+.stats {
+  @include flex-row($spacing-md);
+  padding: $spacing-sm $spacing-md;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: $radius-sm;
+  border: 1px solid rgba(255, 255, 255, 0.04);
 
-// Code preview
+  p {
+    font-size: $font-size-sm;
+    color: $muted;
+  }
 
-.preview
-  @include flex-col(8px)
+  strong {
+    color: $accent;
+    font-weight: $font-weight-bold;
+  }
+}
 
-  label
-    font-size: 11px
-    font-weight: 700
-    letter-spacing: 0.08em
-    text-transform: uppercase
-    color: $muted
+// ── ACTIONS ───────────────────────────────────────────────────────────────
+.actions {
+  @include flex-row($spacing-sm);
+  padding: $spacing-md $spacing-lg;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
 
-.code
-  background: rgba(0, 0, 0, 0.3)
-  border: 1px solid rgba(255, 255, 255, 0.06)
-  border-radius: $radius-sm
-  padding: $spacing-sm
-  overflow: auto
-  max-height: 180px
-  margin: 0
+.copyBtn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: $text-secondary !important;
+  font-size: $font-size-sm !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-  code
-    font-size: 11px
-    color: $text-secondary
-    font-family: ui-monospace, Consolas, monospace
-    line-height: 1.6
-    white-space: pre
-    display: block
-    padding: 0
-    background: none
+  &:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
 
-// Stats
+.downloadBtn {
+  flex: 1;
+  font-size: $font-size-sm !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-.stats
-  @include flex-row($spacing-md)
-  padding: $spacing-sm $spacing-md
-  background: rgba(255, 255, 255, 0.02)
-  border-radius: $radius-sm
-  border: 1px solid rgba(255, 255, 255, 0.04)
+  &:hover {
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(0, 217, 255, 0.3) !important;
+  }
+}
 
-  p
-    font-size: 12px
-    color: $muted
+.cancelBtn {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: $muted !important;
+  font-size: $font-size-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
 
-  strong
-    color: $accent
-    font-weight: 700
-
-// ─── Actions ──────────────────────────────────────────────────────────────────
-
-.actions
-  @include flex-row($spacing-sm)
-  padding: $spacing-md $spacing-lg
-  border-top: 1px solid rgba(255, 255, 255, 0.06)
-  flex-shrink: 0
-
-.copyBtn
-  background: rgba(255, 255, 255, 0.06) !important
-  border: 1px solid rgba(255, 255, 255, 0.1) !important
-  color: $text-secondary !important
-  font-size: 13px !important
-  display: flex !important
-  align-items: center !important
-  gap: 6px !important
-  transform: none !important
-  box-shadow: none !important
-
-  &:hover
-    background: rgba(255, 255, 255, 0.1) !important
-    transform: none !important
-    box-shadow: none !important
-
-.downloadBtn
-  flex: 1
-  font-size: 13px !important
-  display: flex !important
-  align-items: center !important
-  justify-content: center !important
-  gap: 6px !important
-  transform: none !important
-  box-shadow: none !important
-
-  &:hover
-    transform: none !important
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3) !important
-
-.cancelBtn
-  background: rgba(255, 255, 255, 0.04) !important
-  border: 1px solid rgba(255, 255, 255, 0.08) !important
-  color: $muted !important
-  font-size: 13px !important
-  transform: none !important
-  box-shadow: none !important
-
-  &:hover
-    background: rgba(255, 255, 255, 0.08) !important
-    transform: none !important
-    box-shadow: none !important
+  &:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

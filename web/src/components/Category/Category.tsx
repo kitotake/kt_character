@@ -1,5 +1,5 @@
-import styles from "./Category.module.sass";
-import { ReactNode } from "react";
+import styles from "./Category.module.scss";
+import type { ReactNode } from "react";
 
 interface CategoryProps {
   title: string;

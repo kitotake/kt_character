@@ -1,4 +1,4 @@
-import styles from "./Tabs.module.sass";
+import styles from "./Tabs.module.scss";
 
 interface Tab {
   id: string;

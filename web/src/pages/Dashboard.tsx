@@ -1,5 +1,5 @@
-import styles from "./Dashboard.module.sass";
-import { useState, useEffect } from "react";
+import styles from "./Dashboard.module.scss";
+import { useState } from "react";
 import Preview from "../components/Preview/Preview";
 import Tabs from "../components/Tabs/Tabs";
 import Category from "../components/Category/Category";
@@ -176,7 +176,7 @@ export default function Dashboard() {
 
         <div className={styles.content}>
           {tab === "face" && (
-            <Category title="Visage">
+            <Category title="Visage" icon="◉">
               <Slider
                 label="Barbe"
                 min={0}
@@ -189,7 +189,7 @@ export default function Dashboard() {
 
           {tab === "hair" && (
             <>
-              <Category title="Cheveux">
+              <Category title="Cheveux" icon="✦">
                 <Slider
                   label="Style"
                   min={0}
@@ -226,14 +226,7 @@ export default function Dashboard() {
       </div>
 
       {/* Modals */}
-      {showExport && (
-        <ExportAdvanced
-          data={data}
-          presets={presets}
-          onClose={() => setShowExport(false)}
-        />
-      )}
-
+      
       {showComparison && (
         <Comparison
           presets={presets}

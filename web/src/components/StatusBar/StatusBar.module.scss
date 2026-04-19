@@ -1,51 +1,65 @@
-@use "../../style/variables" as *
-@use "../../style/mixins" as *
+@use "../../style/variables.scss" as *;
+@use "../../style/mixins.scss" as *;
 
-.bar
-  @include flex-row($spacing-sm)
-  justify-content: space-between
-  align-items: center
-  padding: $spacing-sm $spacing-md
-  background: rgba(0, 0, 0, 0.3)
-  border-top: 1px solid rgba(255, 255, 255, 0.06)
-  font-size: 11px
-  color: $muted
+.bar {
+  @include flex-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(0, 217, 255, 0.1);
+  font-size: $font-size-xs;
+  color: $muted;
+}
 
-.left
-  @include flex-row(6px)
-  align-items: center
+.left {
+  @include flex-row(6px);
+  align-items: center;
+}
 
-.dot
-  width: 6px
-  height: 6px
-  border-radius: 50%
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transition: $transition;
 
-  &.online
-    background: $success
-    box-shadow: 0 0 6px $success
+  &.online {
+    background: $success;
+    box-shadow: 0 0 6px $success;
+  }
 
-  &.offline
-    background: $error
+  &.offline {
+    background: $error;
+  }
+}
 
-.status
-  font-weight: 500
+.status {
+  font-weight: $font-weight-semibold;
+}
 
-.right
-  @include flex-row($spacing-sm)
-  align-items: center
+.right {
+  @include flex-row($spacing-sm);
+  align-items: center;
+}
 
-.sync
-  color: $muted
+.sync {
+  color: $muted;
+  transition: color $transition;
 
-  &.syncing
-    color: $accent
-    animation: pulse 1s infinite
+  &.syncing {
+    color: $accent;
+    animation: pulse 1s infinite;
+  }
+}
 
-.sep
-  color: rgba(255, 255, 255, 0.15)
+.sep {
+  color: rgba(255, 255, 255, 0.15);
+}
 
-@keyframes pulse
-  0%, 100%
-    opacity: 1
-  50%
-    opacity: 0.4
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

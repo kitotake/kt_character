@@ -1,4 +1,4 @@
-import styles from "./Field.module.sass";
+import styles from "./Field.module.scss";
 
 type FieldType = "text" | "date" | "select" | "readonly";
 

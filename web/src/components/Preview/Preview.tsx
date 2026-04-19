@@ -1,4 +1,4 @@
-import styles from "./Preview.module.sass";
+import styles from "./Preview.module.scss";
 
 const HAIR_COLORS: string[] = [
   "#1a0a00", "#2c1300", "#3d1c00", "#4e2500", "#5c2e00",

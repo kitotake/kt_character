@@ -1,4 +1,4 @@
-import styles from "./Comparison.module.sass";
+import styles from "./Comparison.module.scss";
 import { useState } from "react";
 import { X } from "lucide-react";
 

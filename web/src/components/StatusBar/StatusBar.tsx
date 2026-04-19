@@ -1,4 +1,4 @@
-import styles from "./StatusBar.module.sass";
+import styles from "./StatusBar.module.scss";
 import { useState, useEffect } from "react";
 
 interface StatusBarProps {

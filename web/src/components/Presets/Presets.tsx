@@ -1,4 +1,4 @@
-import styles from "./Presets.module.sass";
+import styles from "./Presets.module.scss";
 import { useState } from "react";
 
 interface Preset {
