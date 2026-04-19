@@ -1,0 +1,51 @@
+@use "../../style/variables" as *
+@use "../../style/mixins" as *
+
+.bar
+  @include flex-row($spacing-sm)
+  justify-content: space-between
+  align-items: center
+  padding: $spacing-sm $spacing-md
+  background: rgba(0, 0, 0, 0.3)
+  border-top: 1px solid rgba(255, 255, 255, 0.06)
+  font-size: 11px
+  color: $muted
+
+.left
+  @include flex-row(6px)
+  align-items: center
+
+.dot
+  width: 6px
+  height: 6px
+  border-radius: 50%
+
+  &.online
+    background: $success
+    box-shadow: 0 0 6px $success
+
+  &.offline
+    background: $error
+
+.status
+  font-weight: 500
+
+.right
+  @include flex-row($spacing-sm)
+  align-items: center
+
+.sync
+  color: $muted
+
+  &.syncing
+    color: $accent
+    animation: pulse 1s infinite
+
+.sep
+  color: rgba(255, 255, 255, 0.15)
+
+@keyframes pulse
+  0%, 100%
+    opacity: 1
+  50%
+    opacity: 0.4

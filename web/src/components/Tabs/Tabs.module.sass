@@ -1,0 +1,47 @@
+@use "../../style/variables" as *
+@use "../../style/mixins" as *
+
+.tabs
+  @include flex-row(0)
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08)
+  margin-bottom: $spacing-md
+  overflow-x: auto
+  scrollbar-width: none
+  &::-webkit-scrollbar
+    display: none
+
+.tab
+  flex: 1
+  background: transparent
+  border: none
+  border-bottom: 2px solid transparent
+  color: $muted
+  padding: $spacing-sm $spacing-md
+  cursor: pointer
+  font-size: 12px
+  font-weight: 600
+  letter-spacing: 0.08em
+  text-transform: uppercase
+  transition: $transition
+  border-radius: 0
+  transform: none !important
+  box-shadow: none !important
+  white-space: nowrap
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 6px
+
+  &:hover
+    color: $text-secondary
+    background: rgba(255, 255, 255, 0.04)
+
+  &.active
+    color: $accent
+    border-bottom-color: $accent
+    background: rgba(108, 92, 231, 0.06)
+
+  svg
+    width: 14px
+    height: 14px
+    flex-shrink: 0

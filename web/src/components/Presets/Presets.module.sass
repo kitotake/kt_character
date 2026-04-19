@@ -1,0 +1,168 @@
+@use "../../style/variables" as *
+@use "../../style/mixins" as *
+
+.section
+  @include flex-col($spacing-sm)
+  margin-top: $spacing-md
+  padding-top: $spacing-md
+  border-top: 1px solid rgba(255, 255, 255, 0.06)
+
+.header
+  @include flex-row($spacing-sm)
+  justify-content: space-between
+  align-items: center
+
+.title
+  font-size: 11px
+  font-weight: 700
+  letter-spacing: 0.12em
+  text-transform: uppercase
+  color: $muted
+
+.addBtn
+  background: rgba(108, 92, 231, 0.15) !important
+  border: 1px solid rgba(108, 92, 231, 0.3) !important
+  color: $accent !important
+  font-size: 11px !important
+  padding: 4px 10px !important
+  height: auto !important
+  transform: none !important
+  box-shadow: none !important
+
+  &:hover
+    background: rgba(108, 92, 231, 0.3) !important
+    transform: none !important
+    box-shadow: none !important
+
+.empty
+  text-align: center
+  padding: $spacing-md
+  color: $muted
+  font-size: 12px
+  background: rgba(255, 255, 255, 0.02)
+  border-radius: $radius-sm
+  border: 1px dashed rgba(255, 255, 255, 0.08)
+
+.list
+  @include flex-col(6px)
+
+.item
+  @include flex-row($spacing-sm)
+  align-items: center
+  padding: 10px $spacing-sm
+  background: rgba(255, 255, 255, 0.03)
+  border: 1px solid rgba(255, 255, 255, 0.06)
+  border-radius: $radius-sm
+  cursor: pointer
+  transition: $transition-fast
+
+  &:hover
+    background: rgba(108, 92, 231, 0.08)
+    border-color: rgba(108, 92, 231, 0.3)
+
+  &.selected
+    background: rgba(108, 92, 231, 0.12)
+    border-color: rgba(108, 92, 231, 0.5)
+
+.dot
+  width: 8px
+  height: 8px
+  border-radius: 50%
+  background: $muted
+  flex-shrink: 0
+  transition: $transition-fast
+
+  .selected &
+    background: $accent
+
+.info
+  flex: 1
+  min-width: 0
+
+.name
+  font-size: 13px
+  font-weight: 600
+  color: $text
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
+.meta
+  font-size: 10px
+  color: $muted
+  margin-top: 2px
+
+.actions
+  @include flex-row(4px)
+  flex-shrink: 0
+
+.actionBtn
+  background: transparent !important
+  border: none !important
+  color: $muted !important
+  padding: 4px !important
+  width: 26px !important
+  height: 26px !important
+  min-width: unset !important
+  border-radius: 4px !important
+  display: flex !important
+  align-items: center !important
+  justify-content: center !important
+  transform: none !important
+  box-shadow: none !important
+  font-size: 14px !important
+
+  &:hover
+    background: rgba(255, 255, 255, 0.08) !important
+    color: $text !important
+    transform: none !important
+    box-shadow: none !important
+
+  &.danger:hover
+    background: rgba(231, 76, 60, 0.15) !important
+    color: $error !important
+
+.form
+  @include flex-row($spacing-sm)
+  margin-top: $spacing-sm
+
+.input
+  flex: 1
+  background: rgba(255, 255, 255, 0.05)
+  border: 1px solid rgba(255, 255, 255, 0.1)
+  color: $text
+  border-radius: $radius-sm
+  padding: $spacing-sm
+  font-size: 13px
+  outline: none
+  transition: $transition-fast
+
+  &::placeholder
+    color: $muted
+
+  &:focus
+    border-color: $accent
+    background: rgba(108, 92, 231, 0.06)
+
+.saveBtn
+  font-size: 12px !important
+  padding: 8px $spacing-sm !important
+  transform: none !important
+  box-shadow: none !important
+
+  &:hover
+    transform: none !important
+    box-shadow: none !important
+
+.cancelBtn
+  background: rgba(255, 255, 255, 0.06) !important
+  color: $text-secondary !important
+  font-size: 12px !important
+  padding: 8px $spacing-sm !important
+  transform: none !important
+  box-shadow: none !important
+
+  &:hover
+    background: rgba(255, 255, 255, 0.12) !important
+    transform: none !important
+    box-shadow: none !important

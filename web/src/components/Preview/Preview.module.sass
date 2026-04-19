@@ -1,0 +1,108 @@
+@use "../../style/variables" as *
+@use "../../style/mixins" as *
+
+.preview
+  width: 100%
+  aspect-ratio: 3/4
+  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)
+  border-radius: $radius
+  position: relative
+  overflow: hidden
+  display: flex
+  align-items: center
+  justify-content: center
+  border: 1px solid rgba(255, 255, 255, 0.06)
+
+.grid
+  position: absolute
+  inset: 0
+  background-image: linear-gradient(rgba(108, 92, 231, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(108, 92, 231, 0.04) 1px, transparent 1px)
+  background-size: 20px 20px
+
+.figure
+  position: relative
+  z-index: 1
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0
+
+.head
+  width: 60px
+  height: 70px
+  background: linear-gradient(180deg, #e8b89a 0%, #d4956e 100%)
+  border-radius: 50% 50% 45% 45%
+  position: relative
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4)
+  overflow: hidden
+
+.hair
+  position: absolute
+  top: -6px
+  left: -4px
+  right: -4px
+  height: 32px
+  border-radius: 50% 50% 0 0
+  transition: background-color 0.3s ease
+
+.body
+  width: 70px
+  height: 90px
+  background: linear-gradient(180deg, #2d3561 0%, #1a1f3a 100%)
+  border-radius: 8px 8px 12px 12px
+  margin-top: -2px
+  position: relative
+
+.arms
+  position: absolute
+  top: 8px
+  left: -18px
+  right: -18px
+  height: 50px
+  display: flex
+  justify-content: space-between
+
+.arm
+  width: 18px
+  height: 50px
+  background: linear-gradient(180deg, #2d3561 0%, #1a1f3a 100%)
+  border-radius: 6px
+
+.legs
+  width: 70px
+  display: flex
+  gap: 6px
+
+.leg
+  flex: 1
+  height: 50px
+  background: linear-gradient(180deg, #1e1e2e 0%, #12121e 100%)
+  border-radius: 0 0 6px 6px
+
+.badge
+  position: absolute
+  bottom: $spacing-sm
+  left: $spacing-sm
+  right: $spacing-sm
+  background: rgba(0, 0, 0, 0.5)
+  backdrop-filter: blur(8px)
+  border-radius: $radius-sm
+  padding: 8px $spacing-sm
+  border: 1px solid rgba(255, 255, 255, 0.08)
+
+.badgeRow
+  display: flex
+  justify-content: space-between
+  align-items: center
+
+.badgeLabel
+  font-size: 10px
+  font-weight: 700
+  letter-spacing: 0.1em
+  text-transform: uppercase
+  color: $muted
+
+.badgeValue
+  font-size: 11px
+  font-weight: 600
+  color: $text

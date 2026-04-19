@@ -1,15 +1,15 @@
 import styles from "./Dashboard.module.sass";
 import { useState, useEffect } from "react";
-import Preview from "../components/Preview";
-import Tabs from "../components/Tabs";
-import Category from "../components/Category";
-import Slider from "../components/Slider";
-import ColorPicker from "../components/ColorPicker";
-import Presets from "../components/Presets";
-import ExportAdvanced from "../components/ExportAdvanced";
-import Comparison from "../components/Comparison";
-import { usePresets } from "../hooks/usePresets";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import Preview from "../components/Preview/Preview";
+import Tabs from "../components/Tabs/Tabs";
+import Category from "../components/Category/Category";
+import Slider from "../components/Slider/Slider";
+import ColorPicker from "../components/ColorPicker/ColorPicker";
+import Presets from "../components/Presets/Presets";
+import ExportAdvanced from "../components/ExportAdvanced/ExportAdvanced";
+import Comparison from "../components/Comparison/Comparison";
+import { usePresets } from "../hooks/usePresets.ts";
+import { useLocalStorage } from "../hooks/useLocalStorage.ts";
 import { BarChart3, Share2, Copy, Eye, Settings } from "lucide-react";
 
 interface CreatorData {
