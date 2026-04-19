@@ -1,0 +1,70 @@
+@use "../style/variables" as *
+@use "../style/mixins" as *
+
+@keyframes slideDown
+  from
+    transform: translateY(-100%)
+    opacity: 0
+  to
+    transform: translateY(0)
+    opacity: 1
+
+@keyframes slideUp
+  from
+    transform: translateY(100%)
+    opacity: 0
+  to
+    transform: translateY(0)
+    opacity: 1
+
+@keyframes fadeOut
+  to
+    opacity: 0
+    transform: translateY(-10px)
+
+.container
+  position: absolute
+  left: $spacing-xl
+  top: $spacing-xl
+  width: 320px
+  @include panel
+  max-height: 90vh
+  overflow-y: auto
+  box-shadow: $shadow-lg
+  animation: slideUp 0.3s $transition
+
+  &::-webkit-scrollbar
+    width: 6px
+
+  &::-webkit-scrollbar-track
+    background: transparent
+
+  &::-webkit-scrollbar-thumb
+    background: rgba(108, 92, 231, 0.5)
+    border-radius: 3px
+
+    &:hover
+      background: rgba(108, 92, 231, 0.8)
+
+.error
+  background: rgba($error, 0.1)
+  border: 1px solid $error
+  color: $error
+  padding: $spacing-md
+  border-radius: $radius-sm
+  margin-bottom: $spacing-md
+  font-size: 12px
+  animation: slideDown 0.2s $transition
+  animation-fill-mode: forwards
+
+.success
+  background: rgba($success, 0.1)
+  border: 1px solid $success
+  color: $success
+  padding: $spacing-md
+  border-radius: $radius-sm
+  margin-bottom: $spacing-md
+  font-size: 12px
+  font-weight: 500
+  animation: slideDown 0.2s $transition, fadeOut 0.2s $transition 2.8s forwards
+  animation-fill-mode: forwards

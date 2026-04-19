@@ -1,0 +1,48 @@
+@use "variables" as *
+
+// Flexbox centering
+@mixin flex-center
+  display: flex
+  align-items: center
+  justify-content: center
+
+// Flexbox row
+@mixin flex-row($gap: $spacing-md)
+  display: flex
+  flex-direction: row
+  gap: $gap
+
+// Flexbox column
+@mixin flex-col($gap: $spacing-md)
+  display: flex
+  flex-direction: column
+  gap: $gap
+
+// Panel/Card styling
+@mixin panel
+  background: $panel
+  border-radius: $radius
+  padding: $spacing-lg
+
+// Input styling
+@mixin input-base
+  background: rgba(255, 255, 255, 0.05)
+  border: 1px solid rgba(255, 255, 255, 0.1)
+  color: $text
+  border-radius: $radius-sm
+  padding: $spacing-sm
+  transition: $transition
+
+  &:hover
+    border-color: rgba(255, 255, 255, 0.2)
+
+  &:focus
+    outline: none
+    border-color: $accent
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2)
+
+// Text truncate
+@mixin truncate
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
