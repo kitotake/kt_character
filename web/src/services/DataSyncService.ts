@@ -261,7 +261,7 @@ class DataSyncService {
     if (typeof window !== "undefined" && (window as any).GetParentResourceName) {
       return (window as any).GetParentResourceName();
     }
-    return "character-creator";
+    return "kt_character";
   }
 
   /**

@@ -44,7 +44,7 @@ export function useSyncData(options: UseSyncDataOptions = {}) {
     if (typeof window !== "undefined" && (window as any).GetParentResourceName) {
       return (window as any).GetParentResourceName();
     }
-    return options.resourceName ?? "character-creator";
+    return options.resourceName ?? "kt_character";
   }, [options.resourceName]);
 
   const sync = useCallback(

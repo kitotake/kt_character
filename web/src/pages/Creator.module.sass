@@ -22,11 +22,13 @@
     opacity: 0
     transform: translateY(-10px)
 
+// ─── Container ────────────────────────────────────────────────────────────────
+
 .container
   position: absolute
   left: $spacing-xl
   top: $spacing-xl
-  width: 320px
+  width: 340px
   @include panel
   max-height: 90vh
   overflow-y: auto
@@ -34,37 +36,129 @@
   animation: slideUp 0.3s $transition
 
   &::-webkit-scrollbar
-    width: 6px
+    width: 4px
 
   &::-webkit-scrollbar-track
     background: transparent
 
   &::-webkit-scrollbar-thumb
-    background: rgba(108, 92, 231, 0.5)
-    border-radius: 3px
+    background: rgba(108, 92, 231, 0.4)
+    border-radius: 2px
 
     &:hover
-      background: rgba(108, 92, 231, 0.8)
+      background: rgba(108, 92, 231, 0.7)
+
+// ─── Messages ─────────────────────────────────────────────────────────────────
 
 .error
   background: rgba($error, 0.1)
-  border: 1px solid $error
+  border: 1px solid rgba($error, 0.35)
   color: $error
-  padding: $spacing-md
+  padding: $spacing-sm $spacing-md
   border-radius: $radius-sm
   margin-bottom: $spacing-md
   font-size: 12px
+  font-weight: 500
   animation: slideDown 0.2s $transition
   animation-fill-mode: forwards
 
 .success
   background: rgba($success, 0.1)
-  border: 1px solid $success
+  border: 1px solid rgba($success, 0.35)
   color: $success
-  padding: $spacing-md
+  padding: $spacing-sm $spacing-md
   border-radius: $radius-sm
   margin-bottom: $spacing-md
   font-size: 12px
   font-weight: 500
   animation: slideDown 0.2s $transition, fadeOut 0.2s $transition 2.8s forwards
   animation-fill-mode: forwards
+
+// ─── Gender Picker ────────────────────────────────────────────────────────────
+
+.genderRow
+  display: grid
+  grid-template-columns: 1fr 1fr
+  gap: $spacing-sm
+
+.genderBtn
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  gap: 4px
+  padding: $spacing-md $spacing-sm !important
+  background: rgba(255, 255, 255, 0.03) !important
+  border: 1px solid rgba(255, 255, 255, 0.08) !important
+  border-radius: $radius-sm !important
+  cursor: pointer
+  transition: $transition !important
+  transform: none !important
+  box-shadow: none !important
+
+  &:hover
+    background: rgba(108, 92, 231, 0.08) !important
+    border-color: rgba(108, 92, 231, 0.3) !important
+    transform: none !important
+    box-shadow: none !important
+
+  &.genderActive
+    background: rgba(108, 92, 231, 0.15) !important
+    border-color: $accent !important
+    box-shadow: 0 0 0 1px rgba(108, 92, 231, 0.3) !important
+    transform: none !important
+
+.genderIcon
+  font-size: 22px
+  line-height: 1
+  color: $text
+
+.genderLabel
+  font-size: 13px
+  font-weight: 700
+  color: $text
+
+.genderSub
+  font-size: 9px
+  color: $muted
+  font-family: ui-monospace, monospace
+  letter-spacing: 0.02em
+
+// ─── Submit ───────────────────────────────────────────────────────────────────
+
+.submitBtn
+  width: 100%
+  margin-top: $spacing-md
+  padding: $spacing-md !important
+  background: $accent !important
+  border: none !important
+  border-radius: $radius-sm !important
+  color: white !important
+  font-size: 13px !important
+  font-weight: 700 !important
+  letter-spacing: 0.06em !important
+  text-transform: uppercase !important
+  cursor: pointer
+  transition: $transition !important
+  position: relative
+  overflow: hidden
+
+  &::before
+    content: ''
+    position: absolute
+    inset: 0
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent)
+    transform: translateX(-100%)
+    transition: transform 0.4s ease
+
+  &:hover
+    background: $accent-hover !important
+    transform: none !important
+    box-shadow: 0 4px 14px rgba(108, 92, 231, 0.4) !important
+
+    &::before
+      transform: translateX(100%)
+
+  &:active
+    transform: scale(0.98) !important
+    box-shadow: none !important
