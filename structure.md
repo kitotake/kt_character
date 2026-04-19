@@ -6,8 +6,7 @@ kt_character/
 │   ├── components/
 │   │   ├── Category/
 │   │   ├── ColorPicker/
-│   │   ├── Comparison/         
-│   │   ├── ExportAdvanced/     
+│   │   ├── Comparison/              
 │   │   ├── Preview/
 │   │   ├── Presets/
 │   │   ├── Slider/

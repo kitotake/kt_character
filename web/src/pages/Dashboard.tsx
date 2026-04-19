@@ -6,7 +6,7 @@ import Category from "../components/Category/Category";
 import Slider from "../components/Slider/Slider";
 import ColorPicker from "../components/ColorPicker/ColorPicker";
 import Presets from "../components/Presets/Presets";
-import ExportAdvanced from "../components/ExportAdvanced/ExportAdvanced";
+
 import Comparison from "../components/Comparison/Comparison";
 import { usePresets } from "../hooks/usePresets.ts";
 import { useLocalStorage } from "../hooks/useLocalStorage.ts";
@@ -27,7 +27,6 @@ export default function Dashboard() {
   });
   const [error, setError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
-  const [showExport, setShowExport] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -154,13 +153,6 @@ export default function Dashboard() {
             <p>Créez et personnalisez vos caractères</p>
           </div>
           <div className={styles.headerActions}>
-            <button
-              className={styles.iconBtn}
-              onClick={() => setShowExport(true)}
-              title="Exporter"
-            >
-              <Share2 size={20} />
-            </button>
             <button className={styles.iconBtn} title="Paramètres">
               <Settings size={20} />
             </button>
