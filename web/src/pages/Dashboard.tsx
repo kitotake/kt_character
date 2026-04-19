@@ -10,7 +10,7 @@ import Presets from "../components/Presets/Presets";
 import Comparison from "../components/Comparison/Comparison";
 import { usePresets } from "../hooks/usePresets.ts";
 import { useLocalStorage } from "../hooks/useLocalStorage.ts";
-import { BarChart3, Share2, Copy, Eye, Settings } from "lucide-react";
+import { BarChart3, Copy, Eye, Settings } from "lucide-react";
 
 interface CreatorData {
   hair: number;
