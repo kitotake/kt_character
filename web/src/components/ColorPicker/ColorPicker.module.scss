@@ -1,0 +1,76 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.wrapper {
+  @include flex-col(10px);
+  width: 100%;
+}
+
+.header {
+  @include flex-between;
+  align-items: center;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.preview {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 217, 255, 0.3);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: $transition;
+
+  &:hover {
+    border-color: $accent;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+}
+
+.swatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: $radius-xs;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0 !important;
+  min-width: unset !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: $transition !important;
+  position: relative;
+  background-clip: padding-box;
+
+  &:hover {
+    transform: scale(1.15) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    z-index: 1;
+  }
+
+  &.selected {
+    border-color: $accent !important;
+    transform: scale(1.2) !important;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+    z-index: 2;
+  }
+}
+
+.indexLabel {
+  font-size: $font-size-xs;
+  color: $muted;
+  text-align: right;
+  font-weight: $font-weight-semibold;
+}

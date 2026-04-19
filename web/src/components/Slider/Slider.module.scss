@@ -1,0 +1,124 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.wrapper {
+  @include flex-col(8px);
+  width: 100%;
+}
+
+.header {
+  @include flex-between;
+  align-items: center;
+}
+
+.label {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.value {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $accent;
+  background: rgba(0, 217, 255, 0.12);
+  padding: 2px 8px;
+  border-radius: $radius-xs;
+  min-width: 36px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.sliderRow {
+  @include flex-row($spacing-sm);
+  align-items: center;
+}
+
+.btn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(0, 217, 255, 0.15) !important;
+  color: $text !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  padding: 0 !important;
+  border-radius: $radius-xs !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.15) !important;
+    border-color: $accent !important;
+    color: $accent !important;
+    transform: scale(1.05) !important;
+    box-shadow: none !important;
+  }
+
+  &:active {
+    background: rgba(0, 217, 255, 0.25) !important;
+    transform: scale(0.95) !important;
+  }
+}
+
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px !important;
+  border-radius: 2px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: none !important;
+  padding: 0 !important;
+  cursor: pointer;
+  position: relative;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: $accent;
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.25);
+    transition: $transition;
+
+    &:hover {
+      transform: scale(1.25);
+      box-shadow: 0 0 0 4px rgba(0, 217, 255, 0.4), $shadow-glow;
+    }
+  }
+
+  &::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: $accent;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.25);
+    transition: $transition;
+
+    &:hover {
+      transform: scale(1.25);
+      box-shadow: 0 0 0 4px rgba(0, 217, 255, 0.4), $shadow-glow;
+    }
+  }
+
+  &::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}

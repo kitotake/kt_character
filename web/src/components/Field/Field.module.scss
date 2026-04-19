@@ -1,0 +1,73 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.wrapper {
+  @include flex-col(6px);
+  width: 100%;
+}
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $muted;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.required {
+  color: $error;
+  margin-left: $spacing-xs;
+}
+
+.input {
+  @include input-base;
+  width: 100%;
+  font-size: $font-size-md;
+}
+
+.select {
+  @include input-base;
+  width: 100%;
+  font-size: $font-size-md;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300d9ff' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+
+  option {
+    background: $bg;
+    color: $text;
+  }
+}
+
+.hint {
+  font-size: $font-size-xs;
+  color: $text-tertiary;
+  font-style: italic;
+}
+
+.error {
+  font-size: $font-size-xs;
+  color: $error;
+  font-weight: $font-weight-semibold;
+}
+
+.readonlyValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+  background: rgba(0, 217, 255, 0.06);
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+  font-family: $font-family-mono;
+  letter-spacing: 0.05em;
+  word-break: break-all;
+  transition: $transition;
+}

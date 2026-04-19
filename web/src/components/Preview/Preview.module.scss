@@ -1,0 +1,128 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.preview {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(160deg, $bg 0%, $bg-secondary 50%, #000814 100%);
+  border-radius: $radius;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 217, 255, 0.1);
+  box-shadow: inset 0 0 20px rgba(0, 217, 255, 0.05);
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 217, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 217, 255, 0.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.figure {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.head {
+  width: 60px;
+  height: 70px;
+  background: linear-gradient(180deg, #e8b89a 0%, #d4956e 100%);
+  border-radius: 50% 50% 45% 45%;
+  position: relative;
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 217, 255, 0.1);
+  overflow: hidden;
+}
+
+.hair {
+  position: absolute;
+  top: -6px;
+  left: -4px;
+  right: -4px;
+  height: 32px;
+  border-radius: 50% 50% 0 0;
+  transition: background-color $transition;
+}
+
+.body {
+  width: 70px;
+  height: 90px;
+  background: linear-gradient(180deg, #2d3561 0%, #1a1f3a 100%);
+  border-radius: 8px 8px 12px 12px;
+  margin-top: -2px;
+  position: relative;
+}
+
+.arms {
+  position: absolute;
+  top: 8px;
+  left: -18px;
+  right: -18px;
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.arm {
+  width: 18px;
+  height: 50px;
+  background: linear-gradient(180deg, #2d3561 0%, #1a1f3a 100%);
+  border-radius: 6px;
+}
+
+.legs {
+  width: 70px;
+  display: flex;
+  gap: 6px;
+}
+
+.leg {
+  flex: 1;
+  height: 50px;
+  background: linear-gradient(180deg, #1e1e2e 0%, #12121e 100%);
+  border-radius: 0 0 6px 6px;
+}
+
+.badge {
+  position: absolute;
+  bottom: $spacing-sm;
+  left: $spacing-sm;
+  right: $spacing-sm;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: $radius-sm;
+  padding: 8px $spacing-sm;
+  border: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+.badgeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badgeLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+.badgeValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $accent;
+}

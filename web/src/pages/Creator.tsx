@@ -1,4 +1,4 @@
-import styles from "./Creator.module.sass";
+import styles from "./Creator.module.scss";
 import { useState, useCallback } from "react";
 import Tabs from "../components/Tabs/Tabs";
 import Slider from "../components/Slider/Slider";
@@ -6,11 +6,13 @@ import Category from "../components/Category/Category";
 import ColorPicker from "../components/ColorPicker/ColorPicker";
 import Field from "../components/Field/Field";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TYPES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 interface IdentityData {
-  identifier: string;       // license:xxxx (readonly, depuis FiveM)
-  unique_id: string;        // UUID multichar (readonly, généré)
+  identifier: string;       // license:xxxx (hidden from UI)
+  unique_id: string;        // UUID multichar (hidden from UI)
   firstname: string;
   lastname: string;
   dateofbirth: string;      // YYYY-MM-DD
@@ -25,7 +27,9 @@ interface AppearanceData {
 
 interface CreatorData extends IdentityData, AppearanceData {}
 
-// ─── Validation ───────────────────────────────────────────────────────────────
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// VALIDATION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function validateIdentity(identity: IdentityData): Record<string, string> {
   const errors: Record<string, string> = {};
@@ -53,15 +57,19 @@ function validateIdentity(identity: IdentityData): Record<string, string> {
   return errors;
 }
 
-// ─── Tabs ─────────────────────────────────────────────────────────────────────
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TABS CONFIGURATION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const CREATOR_TABS = [
-  { id: "identity", label: "Identité", icon: "◎" },
+  { id: "identity", label: "Identité", icon: "👤" },
   { id: "face",     label: "Visage",   icon: "◉" },
   { id: "hair",     label: "Cheveux",  icon: "✦" },
 ];
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MAIN COMPONENT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export default function Creator() {
   const [tab, setTab] = useState<string>("identity");
@@ -71,6 +79,7 @@ export default function Creator() {
 
   const [data, setData] = useState<CreatorData>({
     // Identity — identifier & unique_id sont injectés par FiveM via NUI message
+    // Ces champs ne sont PAS affichés dans l'interface utilisateur
     identifier: (window as any).__kt_identifier ?? "",
     unique_id:  (window as any).__kt_unique_id  ?? "",
     firstname:  "",
@@ -83,7 +92,10 @@ export default function Creator() {
     hairColor: 0,
   });
 
-  // ─── Resource name ──────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────────────────────────────────
+  // Helpers
+  // ──────────────────────────────────────────────────────────────────────────
+
   const getResourceName = useCallback((): string => {
     if (typeof window !== "undefined" && (window as any).GetParentResourceName) {
       return (window as any).GetParentResourceName();
@@ -91,7 +103,6 @@ export default function Creator() {
     return "kt_character";
   }, []);
 
-  // ─── NUI fetch helper ───────────────────────────────────────────────────────
   const nuiFetch = useCallback(
     async (endpoint: string, body: object): Promise<boolean> => {
       try {
@@ -108,7 +119,10 @@ export default function Creator() {
     [getResourceName]
   );
 
-  // ─── Update appearance field ─────────────────────────────────────────────
+  // ──────────────────────────────────────────────────────────────────────────
+  // Update handlers
+  // ──────────────────────────────────────────────────────────────────────────
+
   const updateAppearance = useCallback(
     async (key: keyof AppearanceData, value: number) => {
       const updated = { ...data, [key]: value };
@@ -120,17 +134,20 @@ export default function Creator() {
     [data, nuiFetch]
   );
 
-  // ─── Update identity field ───────────────────────────────────────────────
   const updateIdentity = useCallback(
     (key: keyof IdentityData, value: string) => {
       setData((prev) => ({ ...prev, [key]: value }));
-      // Clear field error on change
-      if (errors[key]) setErrors((e) => { const n = { ...e }; delete n[key]; return n; });
+      if (errors[key]) {
+        setErrors((e) => {
+          const n = { ...e };
+          delete n[key];
+          return n;
+        });
+      }
     },
     [errors]
   );
 
-  // ─── Submit character ────────────────────────────────────────────────────
   const handleSubmit = useCallback(async () => {
     const fieldErrors = validateIdentity(data);
     if (Object.keys(fieldErrors).length > 0) {
@@ -142,14 +159,13 @@ export default function Creator() {
     setErrors({});
     const ok = await nuiFetch("createCharacter", data);
     if (ok) {
-      setSuccessMsg("✓ Personnage créé !");
+      setSuccessMsg("✓ Personnage créé avec succès!");
       setTimeout(() => setSuccessMsg(""), 3000);
     } else {
       setServerError("Erreur lors de la création du personnage");
     }
   }, [data, nuiFetch]);
 
-  // ─── Age display ─────────────────────────────────────────────────────────
   const getAge = () => {
     if (!data.dateofbirth) return null;
     const dob = new Date(data.dateofbirth);
@@ -157,7 +173,10 @@ export default function Creator() {
     return isNaN(age) ? null : age;
   };
 
-  // ─── Render ──────────────────────────────────────────────────────────────
+  // ──────────────────────────────────────────────────────────────────────────
+  // Render
+  // ──────────────────────────────────────────────────────────────────────────
+
   return (
     <div className={styles.container}>
       <Tabs tab={tab} setTab={setTab} tabs={CREATOR_TABS} />
@@ -165,25 +184,9 @@ export default function Creator() {
       {serverError && <div className={styles.error}>{serverError}</div>}
       {successMsg  && <div className={styles.success}>{successMsg}</div>}
 
-      {/* ── IDENTITÉ ──────────────────────────────────────────────────── */}
+      {/* ─── IDENTITY TAB ──────────────────────────────────────────────────── */}
       {tab === "identity" && (
         <>
-          {/* Données FiveM (readonly) */}
-          <Category title="Données FiveM" icon="🔒">
-            <Field
-              label="Identifier"
-              type="readonly"
-              value={data.identifier || "En attente…"}
-              hint="Identifiant FiveM (license:xxxx)"
-            />
-            <Field
-              label="Unique ID"
-              type="readonly"
-              value={data.unique_id || "En attente…"}
-              hint="Identifiant unique du personnage"
-            />
-          </Category>
-
           {/* État civil */}
           <Category title="État civil" icon="👤">
             <Field
@@ -223,7 +226,7 @@ export default function Creator() {
               >
                 <span className={styles.genderIcon}>♂</span>
                 <span className={styles.genderLabel}>Masculin</span>
-                <span className={styles.genderSub}>mp_m_freemode_01</span>
+                <span className={styles.genderSub}>mp_m</span>
               </button>
               <button
                 className={`${styles.genderBtn} ${data.gender === "mp_f_freemode_01" ? styles.genderActive : ""}`}
@@ -231,7 +234,7 @@ export default function Creator() {
               >
                 <span className={styles.genderIcon}>♀</span>
                 <span className={styles.genderLabel}>Féminin</span>
-                <span className={styles.genderSub}>mp_f_freemode_01</span>
+                <span className={styles.genderSub}>mp_f</span>
               </button>
             </div>
           </Category>
@@ -243,9 +246,9 @@ export default function Creator() {
         </>
       )}
 
-      {/* ── VISAGE ────────────────────────────────────────────────────── */}
+      {/* ─── FACE TAB ────────────────────────────────────────────────────── */}
       {tab === "face" && (
-        <Category title="Visage">
+        <Category title="Visage" icon="◉">
           <Slider
             label="Barbe"
             min={0}
@@ -256,22 +259,26 @@ export default function Creator() {
         </Category>
       )}
 
-      {/* ── CHEVEUX ───────────────────────────────────────────────────── */}
+      {/* ─── HAIR TAB ────────────────────────────────────────────────────── */}
       {tab === "hair" && (
-        <Category title="Cheveux">
-          <Slider
-            label="Style"
-            min={0}
-            max={75}
-            value={data.hair}
-            onChange={(v) => updateAppearance("hair", v)}
-          />
-          <ColorPicker
-            label="Couleur"
-            value={data.hairColor}
-            onChange={(v) => updateAppearance("hairColor", v)}
-          />
-        </Category>
+        <>
+          <Category title="Cheveux" icon="✦">
+            <Slider
+              label="Style"
+              min={0}
+              max={75}
+              value={data.hair}
+              onChange={(v) => updateAppearance("hair", v)}
+            />
+          </Category>
+          <Category title="Couleur" icon="🎨">
+            <ColorPicker
+              label="Palette"
+              value={data.hairColor}
+              onChange={(v) => updateAppearance("hairColor", v)}
+            />
+          </Category>
+        </>
       )}
     </div>
   );

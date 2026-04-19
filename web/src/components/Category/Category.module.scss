@@ -1,0 +1,42 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.section {
+  @include flex-col($spacing-md);
+  margin-bottom: $spacing-md;
+  padding: $spacing-lg;
+  background: rgba(0, 217, 255, 0.04);
+  border: 1px solid rgba(0, 217, 255, 0.08);
+  border-radius: $radius-sm;
+  transition: $transition;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.06);
+    border-color: rgba(0, 217, 255, 0.15);
+  }
+}
+
+.header {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+}
+
+.icon {
+  font-size: 16px;
+  opacity: 0.8;
+  color: $accent;
+}
+
+.title {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+.content {
+  @include flex-col($spacing-md);
+}

@@ -1,0 +1,267 @@
+@use "../style/variables" as *;
+@use "../style/mixins" as *;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CREATOR PAGE STYLES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ── ANIMATIONS ────────────────────────────────────────────────────────────
+@keyframes containerSlideIn {
+  from {
+    transform: translateX(-32px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes messageSlideIn {
+  from {
+    transform: translateY(-12px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes messageFadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+// ── MAIN CONTAINER ────────────────────────────────────────────────────────
+.container {
+  position: fixed;
+  left: $spacing-xl;
+  top: $spacing-xl;
+  width: 380px;
+  max-height: calc(100vh - 48px);
+  
+  @include panel;
+  box-shadow: $shadow-xl;
+  animation: containerSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, 0.3);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(0, 217, 255, 0.5);
+    }
+  }
+
+  @include responsive-breakpoint("md") {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-height: none;
+    margin: $spacing-lg;
+  }
+}
+
+// ── MESSAGES ──────────────────────────────────────────────────────────────
+.error,
+.success {
+  @include flex-col($spacing-sm);
+  padding: $spacing-md $spacing-lg;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-md;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  animation: messageSlideIn 0.25s ease-out;
+}
+
+.error {
+  background: rgba($error, 0.12);
+  border: 1px solid rgba($error, 0.3);
+  color: #ff6b6b;
+}
+
+.success {
+  background: rgba($success, 0.12);
+  border: 1px solid rgba($success, 0.3);
+  color: #51cf66;
+  animation: messageSlideIn 0.25s ease-out, messageFadeOut 0.25s ease-in 2.75s forwards;
+}
+
+// ── GENDER PICKER ─────────────────────────────────────────────────────────
+.genderRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+}
+
+.genderBtn {
+  @include flex-col(8px);
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md $spacing-sm !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 2px solid rgba(0, 217, 255, 0.15) !important;
+  border-radius: $radius-sm !important;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity $transition;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(0, 217, 255, 0.3) !important;
+    transform: translateY(-2px) !important;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &.genderActive {
+    background: rgba(0, 217, 255, 0.15) !important;
+    border-color: $accent !important;
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.25) !important;
+    transform: none !important;
+
+    &::before {
+      opacity: 1;
+    }
+  }
+}
+
+.genderIcon {
+  font-size: 28px;
+  line-height: 1;
+  color: $accent;
+  transition: transform $transition;
+
+  .genderBtn:hover & {
+    transform: scale(1.1);
+  }
+}
+
+.genderLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $text;
+}
+
+.genderSub {
+  font-size: $font-size-xs;
+  color: $muted;
+  font-family: $font-family-mono;
+  letter-spacing: 0.05em;
+}
+
+// ── SUBMIT BUTTON ─────────────────────────────────────────────────────────
+.submitBtn {
+  width: 100%;
+  margin-top: $spacing-lg;
+  padding: $spacing-md $spacing-lg !important;
+  background: linear-gradient(135deg, $accent, $accent-light) !important;
+  border: none !important;
+  border-radius: $radius-sm !important;
+  color: #000 !important;
+  font-size: $font-size-md !important;
+  font-weight: $font-weight-bold !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+  transition: $transition !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: $shadow-lg, $shadow-glow;
+  transform: none !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, $accent-light, $accent) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: $shadow-xl, 0 0 40px rgba(0, 217, 255, 0.4) !important;
+
+    &::before {
+      transform: translateX(100%);
+    }
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+    box-shadow: $shadow-md !important;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ── SECTION HEADERS ───────────────────────────────────────────────────────
+.sectionHeader {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  padding-bottom: $spacing-sm;
+  margin-bottom: $spacing-md;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+}
+
+.sectionIcon {
+  font-size: 18px;
+  color: $accent;
+  opacity: 0.8;
+}
+
+.sectionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+// ── RESPONSIVE ────────────────────────────────────────────────────────────
+@include responsive-breakpoint("md") {
+  .container {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-height: none;
+  }
+
+  .genderRow {
+    grid-template-columns: 1fr;
+  }
+}

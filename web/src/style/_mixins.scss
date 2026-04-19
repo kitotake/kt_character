@@ -1,0 +1,320 @@
+@use "variables" as *;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MIXINS UTILITIES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ── FLEXBOX ────────────────────────────────────────────────────────────────
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-row($gap: $spacing-md) {
+  display: flex;
+  flex-direction: row;
+  gap: $gap;
+}
+
+@mixin flex-col($gap: $spacing-md) {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// ── LAYOUT ─────────────────────────────────────────────────────────────────
+@mixin container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 $spacing-lg;
+}
+
+@mixin grid-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: $spacing-lg;
+}
+
+// ── TEXT ───────────────────────────────────────────────────────────────────
+@mixin truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin text-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@mixin text-gradient($from, $to) {
+  background: linear-gradient(135deg, $from, $to);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// ── INPUT STYLING ─────────────────────────────────────────────────────────
+@mixin input-base {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  color: $text;
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+  font-family: $font-family-body;
+  font-size: $font-size-md;
+  transition: $transition;
+
+  &::placeholder {
+    color: $muted;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(0, 217, 255, 0.25);
+  }
+
+  &:focus {
+    outline: none;
+    background: rgba(0, 217, 255, 0.08);
+    border-color: $accent;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.2);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-base {
+  padding: $spacing-sm $spacing-md;
+  border: none;
+  border-radius: $radius-sm;
+  font-family: $font-family-body;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: $transition;
+  white-space: nowrap;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: $accent;
+  color: #000;
+  box-shadow: $shadow-md;
+
+  &:hover:not(:disabled) {
+    background: $accent-light;
+    box-shadow: $shadow-lg, $shadow-glow;
+    transform: translateY(-2px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background: rgba(0, 217, 255, 0.1);
+  color: $accent;
+  border: 1px solid rgba(0, 217, 255, 0.3);
+
+  &:hover:not(:disabled) {
+    background: rgba(0, 217, 255, 0.15);
+    border-color: $accent;
+  }
+}
+
+// ── PANELS & CARDS ─────────────────────────────────────────────────────────
+@mixin panel {
+  background: $panel;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  backdrop-filter: blur(12px);
+  transition: $transition;
+}
+
+@mixin panel-hover {
+  &:hover {
+    background: $panel-hover;
+    border-color: rgba(0, 217, 255, 0.2);
+    box-shadow: 0 0 0 1px rgba(0, 217, 255, 0.15);
+  }
+}
+
+@mixin card {
+  @include panel;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity $transition;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+// ── ANIMATIONS ────────────────────────────────────────────────────────────
+@mixin animate-in {
+  animation: slideUp 0.3s ease-out;
+}
+
+@mixin animate-out {
+  animation: slideDown 0.2s ease-in forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 217, 255, 0.5);
+  }
+}
+
+// ── RESPONSIVE ────────────────────────────────────────────────────────────
+@mixin responsive-breakpoint($breakpoint) {
+  @if $breakpoint == "xs" {
+    @media (max-width: $breakpoint-xs) {
+      @content;
+    }
+  } @else if $breakpoint == "sm" {
+    @media (max-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == "md" {
+    @media (max-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == "lg" {
+    @media (max-width: $breakpoint-lg) {
+      @content;
+    }
+  } @else if $breakpoint == "xl" {
+    @media (max-width: $breakpoint-xl) {
+      @content;
+    }
+  }
+}
+
+// ── UTILITIES ──────────────────────────────────────────────────────────────
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@mixin scroll-smooth {
+  scroll-behavior: smooth;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, 0.3);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(0, 217, 255, 0.5);
+    }
+  }
+}

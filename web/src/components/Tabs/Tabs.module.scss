@@ -1,0 +1,76 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.tabs {
+  @include flex-row(0);
+  border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+  margin-bottom: $spacing-md;
+  overflow-x: auto;
+  scrollbar-width: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: $muted;
+  padding: $spacing-sm $spacing-md;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: $transition;
+  border-radius: 0;
+  transform: none !important;
+  box-shadow: none !important;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: $accent;
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform $transition;
+  }
+
+  &:hover {
+    color: $text-secondary;
+    background: rgba(0, 217, 255, 0.06);
+
+    &::after {
+      transform: scaleX(0.5);
+    }
+  }
+
+  &.active {
+    color: $accent;
+    border-bottom-color: $accent;
+    background: rgba(0, 217, 255, 0.08);
+
+    &::after {
+      transform: scaleX(1);
+    }
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+}

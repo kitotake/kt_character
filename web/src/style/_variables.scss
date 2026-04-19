@@ -1,0 +1,91 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CHARACTER CREATOR - DESIGN TOKENS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ── COLORS ────────────────────────────────────────────────────────────────
+// Premium dark theme with neon accents
+$bg: #0f0f15;
+$bg-secondary: #1a1a24;
+$panel: #16161f;
+$panel-hover: #1f1f2b;
+
+// Primary accent - Vibrant cyan-purple gradient
+$accent: #00d9ff;
+$accent-dark: #00a8cc;
+$accent-light: #40ffff;
+$accent-hover: #00ffff;
+
+// Secondary accents
+$success: #10b981;
+$error: #ef4444;
+$warning: #f59e0b;
+
+// Text colors
+$text: #f8f8ff;
+$text-secondary: #d0d0e8;
+$text-tertiary: #a0a0b8;
+$muted: #707084;
+
+// ── SPACING ───────────────────────────────────────────────────────────────
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+// ── BORDER RADIUS ─────────────────────────────────────────────────────────
+$radius: 16px;
+$radius-lg: 20px;
+$radius-md: 12px;
+$radius-sm: 8px;
+$radius-xs: 4px;
+
+// ── TYPOGRAPHY ────────────────────────────────────────────────────────────
+$font-family-display: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+$font-family-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+$font-family-mono: "JetBrains Mono", "Courier New", monospace;
+
+$font-size-xs: 11px;
+$font-size-sm: 12px;
+$font-size-base: 13px;
+$font-size-md: 14px;
+$font-size-lg: 16px;
+$font-size-xl: 18px;
+$font-size-2xl: 22px;
+$font-size-3xl: 28px;
+$font-size-4xl: 36px;
+
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-extrabold: 800;
+
+// ── TRANSITIONS ───────────────────────────────────────────────────────────
+$transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-fast: 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+// ── SHADOWS ────────────────────────────────────────────────────────────────
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.32);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.48);
+$shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.56);
+$shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.64);
+$shadow-glow: 0 0 20px rgba(0, 217, 255, 0.3);
+
+// ── BREAKPOINTS ───────────────────────────────────────────────────────────
+$breakpoint-xs: 360px;
+$breakpoint-sm: 480px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1440px;
+$breakpoint-2xl: 1920px;
+
+// ── Z-INDEX ───────────────────────────────────────────────────────────────
+$z-dropdown: 100;
+$z-sticky: 200;
+$z-fixed: 300;
+$z-modal: 1000;
+$z-tooltip: 1100;
