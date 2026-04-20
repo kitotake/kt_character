@@ -1,9 +1,9 @@
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
--- KT CHARACTER CREATOR - CLIENT MAIN v2.0.2
--- Fix close UI + freeze + commande /skin
+-- KT CHARACTER CREATOR - CLIENT MAIN v2.0.3
+-- Fix : closeUI (type vs action) + freeze + /skin
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-local VERSION         = "2.0.2"
+local VERSION         = "2.0.3"
 local DEBUG           = true
 local nuiOpen         = false
 local currentUniqueId = nil
@@ -14,16 +14,15 @@ local function debugLog(msg, level)
 end
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
--- HELPER : fermer proprement le creator
--- Appelé par le NUI callback "close" (déclenché par Creator.tsx après submit)
+-- HELPER : fermer proprement le creator (caméra + unfreeze + NUI focus)
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 local function closeCreator()
-    -- Détruire la caméra scriptée (inclut FreezeEntityPosition false)
+    -- Détruire la caméra (inclut FreezeEntityPosition false interne)
     if DestroyCharacterCam then
         DestroyCharacterCam()
     end
 
-    -- Force unfreeze sur le ped ACTUEL (au cas où le modèle a changé)
+    -- Force unfreeze sur le ped ACTUEL (le modèle peut avoir changé)
     local ped = PlayerPedId()
     FreezeEntityPosition(ped, false)
 
@@ -47,7 +46,6 @@ RegisterCommand("character", function()
     debugLog("Creator ouvert", "INFO")
 end, false)
 
--- /skin : ouvrir le creator en mode modification (même UI, skin pré-chargé)
 RegisterCommand("skin", function()
     if nuiOpen then return end
     if not currentUniqueId then
@@ -92,7 +90,6 @@ RegisterNUICallback("createCharacter", function(data, cb)
     cb("ok")
 end)
 
--- Focus caméra selon l'onglet
 RegisterNUICallback("tabChange", function(data, cb)
     local tab = data and data.tab or "identity"
     if tab == "parents" or tab == "features" or tab == "overlays" then
@@ -117,21 +114,13 @@ RegisterNUICallback("cameraControl", function(data, cb)
     cb("ok")
 end)
 
--- FIX PRINCIPAL : Creator.tsx appelle nuiFetch("close") après le submit
--- C'est ici que l'UI se ferme proprement, qu'il y ait eu erreur DB ou non
+-- Déclenché par Creator.tsx quand l'utilisateur clique "Créer le personnage"
+-- (nuiFetch("close") dans handleSubmit)
 RegisterNUICallback("close", function(_, cb)
     closeCreator()
-    print("Creator close callback triggered")
-     -- ✅ CORRIGÉ : le close est désormais géré côté client, on ne déclenche plus d'événement serveur pour ça
-        -- TriggerServerEvent("kt_character:closeCreator") --- IGNORE ---
-            print("Close event handled client-side, no server event triggered")
-            print("NUI focus released, creator closed cleanly")
-            print("Debug: Creator closed, NUI focus should be false, player unfrozen")
-            
     cb("ok")
 end)
 
--- Sauvegarde apparence (depuis /skin)
 RegisterNUICallback("saveAppearance", function(data, cb)
     if not currentUniqueId then cb("error_no_character") return end
     data.unique_id = currentUniqueId
@@ -175,29 +164,41 @@ RegisterNetEvent("kt_character:sendIdentifier", function(license)
     })
 end)
 
--- FIX : l'UI est déjà fermée par Creator.tsx avant d'arriver ici
--- On s'assure juste que le ped est décongelé et on applique le skin
+-- Appelé par le serveur APRÈS création DB réussie
+-- À ce moment l'UI est déjà fermée via kt_character:closeUI
+-- On stocke juste le unique_id et on applique le skin
 RegisterNetEvent("kt_character:created", function(character)
-    debugLog("Personnage créé (event serveur): " .. character.firstname .. " " .. character.lastname, "INFO")
+    debugLog("Personnage créé: " .. character.firstname .. " " .. character.lastname, "INFO")
     currentUniqueId = character.unique_id
 
-    -- S'assurer que le ped est bien décongelé (l'UI l'a déjà fait normalement)
+    -- Sécurité : s'assurer que le ped est bien décongelé
     FreezeEntityPosition(PlayerPedId(), false)
 
-    -- Appliquer le skin après le spawn Union
+    -- Appliquer le skin après le spawn Union (qui arrive via union:spawn:apply)
     Citizen.CreateThread(function()
         Wait(1500)
         ApplyFullAppearance(character)
     end)
 end)
 
--- Réponse du serveur pour /skin : charger l'apparence actuelle dans l'UI
+-- ✅ FIX PRINCIPAL : fermer le creator depuis le serveur
+-- Le serveur envoie cet event juste après kt_character:created
+-- CORRECTION : utiliser type = "close" (pas action = "close")
+RegisterNetEvent("kt_character:closeUI", function()
+    -- closeCreator gère : caméra + FreezeEntityPosition(false) + SetNuiFocus(false)
+    closeCreator()
+print("closeUI reçu → creator fermé")
+    -- Dire au React de cacher le composant (type = "close", pas action)
+    SendNUIMessage({ type = "close" })
+
+    debugLog("closeUI reçu → creator fermé", "INFO")
+end)
+
 RegisterNetEvent("kt_character:skinEditData", function(skinData)
     debugLog("Données skin reçues pour édition", "INFO")
     SendNUIMessage({ type = "open", skinData = skinData })
 end)
 
--- Ouvrir le creator depuis Union (quand noCharacters)
 RegisterNetEvent("kt_character:openCreator", function()
     if nuiOpen then return end
     debugLog("Ouverture creator (demandée par Union)", "INFO")
@@ -226,12 +227,12 @@ RegisterNetEvent("kt_character:outfitDeleted", function(outfitId)
 end)
 
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
--- INTÉGRATION UNION : ré-appliquer le skin après spawn
+-- INTÉGRATION UNION
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RegisterNetEvent("union:spawn:apply", function(characterData)
     if characterData and characterData.unique_id then
         currentUniqueId = characterData.unique_id
-        debugLog("Union spawn détecté pour " .. characterData.unique_id .. ", skin en attente...", "INFO")
+        debugLog("Union spawn pour " .. characterData.unique_id .. ", skin en attente...", "INFO")
         Citizen.CreateThread(function()
             Wait(1500)
             ApplyFullAppearance(characterData)
@@ -255,5 +256,5 @@ end)
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Citizen.CreateThread(function()
     Wait(1000)
-    debugLog("kt_character client v" .. VERSION .. " chargé (intégration Union)", "INFO")
+    debugLog("kt_character client v" .. VERSION .. " chargé", "INFO")
 end)

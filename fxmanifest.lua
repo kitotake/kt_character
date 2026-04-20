@@ -19,5 +19,19 @@ client_scripts {
 }
 
 server_scripts {
-    'server/*.lua'
+    -- Core (ordre important)
+    'server/config.lua',
+    'server/utils.lua',
+    'server/identifiers.lua',
+    'server/validator.lua',
+
+    -- Features
+    'server/character_create.lua',
+    'server/character_load.lua',
+    'server/character_skin.lua',
+    'server/character_update.lua',
+    'server/events.lua',
+
+    -- Main (toujours en dernier)
+    'server/main.lua'
 }
