@@ -234,6 +234,35 @@
   flex-shrink: 0;
 }
 
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: $text-secondary !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 87, 87, 0.12) !important;
+    border-color: rgba(255, 87, 87, 0.35) !important;
+    color: #ff8f8f !important;
+  }
+
+  &:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+  }
+}
+
 .stepNum {
   font-size: $font-size-xs;
   font-family: $font-family-mono;

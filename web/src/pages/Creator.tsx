@@ -143,6 +143,14 @@ export default function Creator() {
     nuiFetch("cameraControl", { action });
   }, [nuiFetch]);
 
+  const handleClose = useCallback(async () => {
+    if (submitting) return;
+    setServerError("");
+    setSubmitting(false);
+    await nuiFetch("close", {});
+    setVisible(false);
+  }, [nuiFetch, submitting]);
+
   // ─── Messages NUI entrants ────────────────────────────────────────────
   useEffect(() => {
     const handler = (event: MessageEvent) => {
@@ -158,6 +166,9 @@ export default function Creator() {
           break;
         case "close":
           setVisible(false);
+          setSubmitting(false);
+          setServerError("");
+          setErrors({});
           break;
         case "setIdentifier":
           setIdentity((p) => ({
@@ -175,6 +186,19 @@ export default function Creator() {
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
   }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      void handleClose();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [visible, handleClose]);
 
   if (!visible) return null;
 
@@ -214,14 +238,15 @@ export default function Creator() {
     setSubmitting(true);
 
     // Envoyer la création au serveur
-    await nuiFetch("createCharacter", buildPayload());
+    const created = await nuiFetch("createCharacter", buildPayload());
+    if (!created) {
+      setServerError("La creation du personnage a echoue.");
+      setSubmitting(false);
+      return;
+    }
 
     // Fermer l'UI côté Lua via le callback "close" (unfreeze + caméra)
-    await nuiFetch("close", {});
-
-    // Masquer le composant React
-    setVisible(false);
-    setSubmitting(false);
+    await handleClose();
   };
 
   const getAge = () => {
@@ -278,6 +303,15 @@ export default function Creator() {
           <h2 className={styles.stepTitle}>
             <span>{currentStep.icon}</span> {currentStep.label}
           </h2>
+          <button
+            type="button"
+            className={styles.closeBtn}
+            onClick={() => void handleClose()}
+            disabled={submitting}
+            title="Fermer"
+          >
+            ×
+          </button>
         </div>
 
         {/* Messages */}
