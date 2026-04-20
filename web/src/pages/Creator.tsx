@@ -27,7 +27,6 @@ import type {
   Tattoo,
 } from "../types/appearance.types";
 
-// ─── Steps ────────────────────────────────────────────────────────────────
 const STEPS = [
   { id: "identity", label: "Identité",   icon: "👤", tab: "identity" },
   { id: "parents",  label: "Parents",    icon: "🧬", tab: "parents"  },
@@ -63,24 +62,23 @@ function validateIdentity(identity: IdentityData): Record<string, string> {
   return errors;
 }
 
-// ─── Camera button config ─────────────────────────────────────────────────
 const CAM_BUTTONS = [
-  { action: "rotateLeft",  icon: "↺", label: "Rotation gauche",   title: "Tourner à gauche" },
-  { action: "rotateRight", icon: "↻", label: "Rotation droite",   title: "Tourner à droite" },
-  { action: "zoomIn",      icon: "⊕", label: "Zoom +",            title: "Zoom avant"       },
-  { action: "zoomOut",     icon: "⊖", label: "Zoom -",            title: "Zoom arrière"     },
-  { action: "focusHead",   icon: "◯", label: "Focus tête",        title: "Focus visage"     },
-  { action: "focusBody",   icon: "▭", label: "Focus corps",       title: "Focus corps"      },
-  { action: "focusFull",   icon: "▬", label: "Vue complète",      title: "Vue entière"      },
-  { action: "resetCam",    icon: "⌖", label: "Réinitialiser",     title: "Réinitialiser caméra" },
+  { action: "rotateLeft",  icon: "↺", label: "Gauche",   title: "Tourner à gauche" },
+  { action: "rotateRight", icon: "↻", label: "Droite",   title: "Tourner à droite" },
+  { action: "zoomIn",      icon: "⊕", label: "Zoom +",   title: "Zoom avant"       },
+  { action: "zoomOut",     icon: "⊖", label: "Zoom -",   title: "Zoom arrière"     },
+  { action: "focusHead",   icon: "◯", label: "Tête",     title: "Focus visage"     },
+  { action: "focusBody",   icon: "▭", label: "Corps",    title: "Focus corps"      },
+  { action: "focusFull",   icon: "▬", label: "Entier",   title: "Vue entière"      },
+  { action: "resetCam",    icon: "⌖", label: "Reset",    title: "Réinitialiser"    },
 ];
 
 export default function Creator() {
   const [visible,     setVisible]     = useState(false);
   const [stepIndex,   setStepIndex]   = useState(0);
   const [errors,      setErrors]      = useState<Record<string, string>>({});
-  const [successMsg,  setSuccessMsg]  = useState("");
   const [serverError, setServerError] = useState("");
+  const [submitting,  setSubmitting]  = useState(false);
 
   const [identity, setIdentity] = useState<IdentityData>({
     identifier: "", unique_id: "", firstname: "", lastname: "",
@@ -121,7 +119,6 @@ export default function Creator() {
     await nuiFetch("update", payload);
   }, [nuiFetch]);
 
-  // ─── Changer d'étape et sync caméra ──────────────────────────────────
   const goToStep = useCallback((index: number) => {
     const step = STEPS[index];
     if (!step) return;
@@ -142,7 +139,6 @@ export default function Creator() {
     if (stepIndex > 0) goToStep(stepIndex - 1);
   };
 
-  // ─── Commande caméra ──────────────────────────────────────────────────
   const camControl = useCallback((action: string) => {
     nuiFetch("cameraControl", { action });
   }, [nuiFetch]);
@@ -154,17 +150,26 @@ export default function Creator() {
       if (!msg?.type) return;
       switch (msg.type) {
         case "open":
-          setVisible(true); setStepIndex(0);
-          setErrors({}); setServerError(""); setSuccessMsg("");
+          setVisible(true);
+          setStepIndex(0);
+          setErrors({});
+          setServerError("");
+          setSubmitting(false);
           break;
-        case "close":   setVisible(false); break;
+        case "close":
+          setVisible(false);
+          break;
         case "setIdentifier":
           setIdentity((p) => ({
             ...p,
             identifier: msg.identifier ?? p.identifier,
             unique_id:  msg.unique_id  ?? p.unique_id,
-          })); break;
-        case "error":   setServerError(msg.message ?? "Erreur inconnue"); break;
+          }));
+          break;
+        case "error":
+          setServerError(msg.message ?? "Erreur inconnue");
+          setSubmitting(false);
+          break;
       }
     };
     window.addEventListener("message", handler);
@@ -198,19 +203,25 @@ export default function Creator() {
     });
   };
 
+  // FIX : fermer l'UI immédiatement via nuiFetch("close")
+  // Ne pas attendre kt_character:created (peut ne jamais arriver si DB échoue)
   const handleSubmit = async () => {
     const fieldErrors = validateIdentity(identity);
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors); goToStep(0); return;
     }
     setErrors({});
-    const ok = await nuiFetch("createCharacter", buildPayload());
-    if (ok) {
-      setSuccessMsg("✓ Personnage créé avec succès!");
-      setTimeout(() => setSuccessMsg(""), 3000);
-    } else {
-      setServerError("Erreur lors de la création du personnage");
-    }
+    setSubmitting(true);
+
+    // Envoyer la création au serveur
+    await nuiFetch("createCharacter", buildPayload());
+
+    // Fermer l'UI côté Lua via le callback "close" (unfreeze + caméra)
+    await nuiFetch("close", {});
+
+    // Masquer le composant React
+    setVisible(false);
+    setSubmitting(false);
   };
 
   const getAge = () => {
@@ -221,12 +232,9 @@ export default function Creator() {
 
   const isLastStep = stepIndex === STEPS.length - 1;
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // RENDER
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   return (
     <>
-      {/* ── Boutons caméra flottants (droite) ──────────────────────── */}
+      {/* Boutons caméra */}
       <div className={styles.camPanel}>
         <span className={styles.camTitle}>CAMÉRA</span>
         {CAM_BUTTONS.map((btn) => (
@@ -242,7 +250,7 @@ export default function Creator() {
         ))}
       </div>
 
-      {/* ── Panneau principal ──────────────────────────────────────── */}
+      {/* Panneau principal */}
       <div className={styles.container}>
 
         {/* Step progress bar */}
@@ -274,9 +282,8 @@ export default function Creator() {
 
         {/* Messages */}
         {serverError && <div className={styles.error}>{serverError}</div>}
-        {successMsg  && <div className={styles.success}>{successMsg}</div>}
 
-        {/* ── Step content ──────────────────────────────────────────── */}
+        {/* Step content */}
         <div className={styles.stepContent}>
 
           {currentStep.id === "identity" && (
@@ -375,19 +382,23 @@ export default function Creator() {
           )}
         </div>
 
-        {/* ── Navigation ───────────────────────────────────────────── */}
+        {/* Navigation */}
         <div className={styles.navRow}>
           <button
             className={styles.navBtn}
             onClick={prevStep}
-            disabled={stepIndex === 0}
+            disabled={stepIndex === 0 || submitting}
           >
             ← Retour
           </button>
 
           {isLastStep ? (
-            <button className={styles.submitBtn} onClick={handleSubmit}>
-              ✓ Créer le personnage
+            <button
+              className={styles.submitBtn}
+              onClick={handleSubmit}
+              disabled={submitting}
+            >
+              {submitting ? "⏳ Création..." : "✓ Créer le personnage"}
             </button>
           ) : (
             <button className={styles.navBtnNext} onClick={nextStep}>

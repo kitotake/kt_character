@@ -62,6 +62,10 @@ local function applyCam(presetKey, angle, distMult, interp)
     end
 end
 
+-- Position de fallback si le ped est à (0,0,0) (cas player_zero non spawné)
+local DEFAULT_CAM_POS = vector3(-268.5, -957.8, 31.2)
+local DEFAULT_CAM_HEADING = 90.0
+
 -- ─── Créer la caméra au démarrage du creator ──────────────────────────
 function CreateCharacterCam()
     if camActive then return end
@@ -71,7 +75,30 @@ function CreateCharacterCam()
     camFocusKey = "face"
 
     local ped    = PlayerPedId()
+
+    -- ── Attendre que le ped soit valide ──────────────────────────────
+    local timeout = 0
+    while not DoesEntityExist(ped) and timeout < 100 do
+        Wait(50)
+        ped     = PlayerPedId()
+        timeout = timeout + 1
+    end
+
+    -- ── Récupérer coords et corriger si (0,0,0) ───────────────────────
     local coords = GetEntityCoords(ped)
+    if math.abs(coords.x) < 1.0 and math.abs(coords.y) < 1.0 then
+        -- Le ped n'a pas encore été placé (player_zero en attente de spawn)
+        -- On le téléporte à la position de spawn par défaut
+        SetEntityCoords(ped, DEFAULT_CAM_POS.x, DEFAULT_CAM_POS.y, DEFAULT_CAM_POS.z,
+            false, false, false, true)
+        SetEntityHeading(ped, DEFAULT_CAM_HEADING)
+        Wait(100) -- laisser le moteur repositionner le ped
+        coords = GetEntityCoords(ped)
+    end
+
+    -- ── Orienter le ped face à la caméra ─────────────────────────────
+    -- (heading 0 = vers le Nord ; la cam est au Sud → ped regarde la cam)
+    SetEntityHeading(ped, 180.0)
 
     FreezeEntityPosition(ped, true)
     SetEntityVisible(ped, true, false)
