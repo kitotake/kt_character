@@ -1,0 +1,109 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.wrapper {
+  @include flex-col($spacing-sm);
+  width: 100%;
+}
+
+.sectionTitle {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $muted;
+  padding-bottom: $spacing-xs;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.08);
+  margin-bottom: $spacing-xs;
+}
+
+// ── CLOTHING CARD ─────────────────────────────────────────────────────────
+.card {
+  background: rgba(0, 217, 255, 0.03);
+  border: 1px solid rgba(0, 217, 255, 0.08);
+  border-radius: $radius-sm;
+  overflow: hidden;
+  transition: $transition;
+
+  &:hover {
+    border-color: rgba(0, 217, 255, 0.18);
+  }
+}
+
+.cardHeader {
+  @include flex-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.04);
+  }
+}
+
+.cardLeft {
+  @include flex-row($spacing-sm);
+  align-items: center;
+}
+
+.icon {
+  font-size: 16px;
+  width: 24px;
+  text-align: center;
+}
+
+.cardName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+}
+
+.cardValues {
+  font-size: $font-size-xs;
+  color: $muted;
+  font-family: $font-family-mono;
+}
+
+.chevron {
+  font-size: 10px;
+  color: $muted;
+  transition: transform $transition;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+// ── CARD BODY ─────────────────────────────────────────────────────────────
+.cardBody {
+  @include flex-col($spacing-sm);
+  padding: $spacing-sm $spacing-md $spacing-md;
+  border-top: 1px solid rgba(0, 217, 255, 0.06);
+}
+
+.sliderRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-sm;
+}
+
+// ── PROP REMOVE ──────────────────────────────────────────────────────────
+.removeBtn {
+  background: rgba($error, 0.08) !important;
+  border: 1px solid rgba($error, 0.2) !important;
+  color: rgba($error, 0.8) !important;
+  font-size: $font-size-xs !important;
+  padding: 4px 10px !important;
+  height: auto !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  align-self: flex-start;
+
+  &:hover {
+    background: rgba($error, 0.15) !important;
+    border-color: rgba($error, 0.4) !important;
+    color: $error !important;
+  }
+}

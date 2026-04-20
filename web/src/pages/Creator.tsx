@@ -6,9 +6,21 @@ import Category from "../components/Category/Category";
 import ColorPicker from "../components/ColorPicker/ColorPicker";
 import Field from "../components/Field/Field";
 
+// Nouveaux imports
+import Parents     from "../components/Parents/Parents";
+import FaceFeatures from "../components/FaceFeatures/FaceFeatures";
+import HeadOverlays from "../components/HeadOverlays/HeadOverlays";
+import Clothing    from "../components/Clothing/Clothing";
+import Tattoos     from "../components/Tattoos/Tattoos";
+import {
+  DEFAULT_HEAD_BLEND, DEFAULT_FACE_FEATURES,
+  DEFAULT_HEAD_OVERLAYS, DEFAULT_COMPONENTS, DEFAULT_PROPS,
+} from "../types/appearance.types";
+
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // TYPES
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ━━━━━━━━━━━━━═══════════════════════════════════════════════════════════
 
 interface IdentityData {
   identifier: string;       // license:xxxx (hidden from UI)
@@ -63,8 +75,12 @@ function validateIdentity(identity: IdentityData): Record<string, string> {
 
 const CREATOR_TABS = [
   { id: "identity", label: "Identité", icon: "👤" },
-  { id: "face",     label: "Visage",   icon: "◉" },
+  { id: "parents",  label: "Parents",  icon: "👨‍👩‍👧" },
+  { id: "features", label: "Traits",   icon: "◉" },
+  { id: "overlays", label: "Overlays", icon: "🎨" },
   { id: "hair",     label: "Cheveux",  icon: "✦" },
+  { id: "clothing", label: "Tenues",   icon: "👔" },
+  { id: "tattoos",  label: "Tatouages", icon: "💉" },
 ];
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

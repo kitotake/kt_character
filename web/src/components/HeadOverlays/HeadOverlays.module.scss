@@ -1,0 +1,128 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.wrapper {
+  @include flex-col($spacing-sm);
+  width: 100%;
+}
+
+// ── OVERLAY CARD ──────────────────────────────────────────────────────────
+.card {
+  background: rgba(0, 217, 255, 0.03);
+  border: 1px solid rgba(0, 217, 255, 0.08);
+  border-radius: $radius-sm;
+  padding: $spacing-md;
+  transition: $transition;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.05);
+    border-color: rgba(0, 217, 255, 0.15);
+  }
+
+  &.active {
+    border-color: rgba(0, 217, 255, 0.3);
+  }
+}
+
+// ── HEADER CARD ──────────────────────────────────────────────────────────
+.cardHeader {
+  @include flex-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+  cursor: pointer;
+  user-select: none;
+}
+
+.cardTitle {
+  @include flex-row(6px);
+  align-items: center;
+}
+
+.cardName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $text-secondary;
+}
+
+.cardBadge {
+  font-size: $font-size-xs;
+  color: $accent;
+  background: rgba(0, 217, 255, 0.12);
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+  font-family: $font-family-mono;
+}
+
+.chevron {
+  font-size: 10px;
+  color: $muted;
+  transition: transform $transition;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+// ── CARD BODY ─────────────────────────────────────────────────────────────
+.cardBody {
+  @include flex-col($spacing-sm);
+  padding-top: $spacing-sm;
+  border-top: 1px solid rgba(0, 217, 255, 0.06);
+}
+
+// ── COLOR ROW ─────────────────────────────────────────────────────────────
+.colorRow {
+  @include flex-row($spacing-sm);
+  align-items: center;
+}
+
+.colorLabel {
+  font-size: $font-size-xs;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.colorDot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 217, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.colorSwatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0 !important;
+  min-width: unset !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: $transition !important;
+
+  &:hover {
+    transform: scale(1.2) !important;
+    z-index: 1;
+  }
+
+  &.selected {
+    border-color: $accent !important;
+    transform: scale(1.25) !important;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.4) !important;
+    z-index: 2;
+  }
+}

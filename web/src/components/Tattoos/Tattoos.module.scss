@@ -1,0 +1,205 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.wrapper {
+  @include flex-col($spacing-md);
+  width: 100%;
+}
+
+// ── ZONES ─────────────────────────────────────────────────────────────────
+.zones {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-xs;
+}
+
+.zoneBtn {
+  @include flex-col(4px);
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(0, 217, 255, 0.1) !important;
+  border-radius: $radius-sm !important;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.06) !important;
+    border-color: rgba(0, 217, 255, 0.25) !important;
+  }
+
+  &.active {
+    background: rgba(0, 217, 255, 0.12) !important;
+    border-color: $accent !important;
+    box-shadow: 0 0 12px rgba(0, 217, 255, 0.2) !important;
+  }
+}
+
+.zoneIcon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.zoneName {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $text-secondary;
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+.zoneCount {
+  font-size: $font-size-xs;
+  color: $accent;
+  font-family: $font-family-mono;
+}
+
+// ── TATTOO GRID ───────────────────────────────────────────────────────────
+.gridHeader {
+  @include flex-between;
+  align-items: center;
+}
+
+.gridTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $muted;
+}
+
+.clearBtn {
+  background: rgba($error, 0.08) !important;
+  border: 1px solid rgba($error, 0.2) !important;
+  color: rgba($error, 0.8) !important;
+  font-size: $font-size-xs !important;
+  padding: 4px 10px !important;
+  height: auto !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+
+  &:hover {
+    background: rgba($error, 0.15) !important;
+    color: $error !important;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-xs;
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 217, 255, 0.3) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, 0.3);
+    border-radius: 2px;
+  }
+}
+
+.tattooCard {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid rgba(0, 217, 255, 0.06) !important;
+  border-radius: $radius-xs !important;
+  padding: $spacing-sm !important;
+  text-align: left;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+  @include flex-col(2px);
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.07) !important;
+    border-color: rgba(0, 217, 255, 0.25) !important;
+  }
+
+  &.applied {
+    background: rgba(0, 217, 255, 0.12) !important;
+    border-color: $accent !important;
+  }
+}
+
+.tattooLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tattooCollection {
+  font-size: 10px;
+  color: $muted;
+  font-family: $font-family-mono;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── APPLIED LIST ──────────────────────────────────────────────────────────
+.appliedSection {
+  @include flex-col($spacing-xs);
+}
+
+.appliedTitle {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $muted;
+}
+
+.appliedList {
+  @include flex-col(4px);
+}
+
+.appliedItem {
+  @include flex-between;
+  align-items: center;
+  padding: 6px $spacing-sm;
+  background: rgba(0, 217, 255, 0.06);
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  border-radius: $radius-xs;
+}
+
+.appliedLabel {
+  font-size: $font-size-xs;
+  color: $text-secondary;
+}
+
+.removeBtn {
+  background: transparent !important;
+  border: none !important;
+  color: $muted !important;
+  padding: 2px 6px !important;
+  font-size: $font-size-xs !important;
+  transform: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  transition: $transition !important;
+
+  &:hover {
+    color: $error !important;
+  }
+}
+
+.empty {
+  text-align: center;
+  padding: $spacing-md;
+  color: $muted;
+  font-size: $font-size-sm;
+  background: rgba(0, 217, 255, 0.02);
+  border-radius: $radius-xs;
+  border: 1px dashed rgba(0, 217, 255, 0.06);
+}

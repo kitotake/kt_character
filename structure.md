@@ -1,6 +1,4 @@
 kt_character/
-├── public/
-│   └── index.html
 │
 ├── src/
 │   ├── components/
