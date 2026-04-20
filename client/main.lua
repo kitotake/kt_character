@@ -1,254 +1,245 @@
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
--- KT CHARACTER CREATOR - CLIENT SCRIPT
+-- KT CHARACTER CREATOR - CLIENT MAIN
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-local VERSION = "1.0.0"
-local DEBUG = true
-local nuiOpen = false
-local currentCharacterId = nil
+local VERSION          = "2.0.0"
+local DEBUG            = true
+local nuiOpen          = false
+local currentUniqueId  = nil   -- unique_id du perso actif
 
--- ─── Utilité - Debug Log ───────────────────────────────────────────────────
-local function debugLog(message, level)
+-- ─── Debug log ────────────────────────────────────────────────────────────
+local function debugLog(msg, level)
     if not DEBUG then return end
-    level = level or "INFO"
-    print(("^2[kt_character:%s]^7 %s"):format(level, message))
+    print(("^2[kt_character:%s]^7 %s"):format(level or "INFO", msg))
 end
 
--- ─── Ouvrir le Character Creator ──────────────────────────────────────────
-RegisterCommand("character", function(source, args, rawCommand)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- COMMANDES
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+-- Ouvrir le creator
+RegisterCommand("character", function()
     if nuiOpen then
-        debugLog("Character creator déjà ouvert", "WARN")
+        debugLog("Creator déjà ouvert", "WARN")
         return
     end
 
     nuiOpen = true
-    debugLog("Ouverture du character creator", "INFO")
+    debugLog("Ouverture du creator", "INFO")
 
-    -- Demander l'identifier au serveur
     TriggerServerEvent("kt_character:requestIdentifier")
 
+    CreateCharacterCam() -- camera.lua
     SetNuiFocus(true, true)
     SendNUIMessage({ type = "open" })
 end, false)
 
--- ─── Recevoir l'identifier depuis le serveur ──────────────────────────────
-RegisterNetEvent("kt_character:sendIdentifier", function(license)
-    debugLog("Identifier reçu du serveur", "INFO")
-    
-    -- Injecter dans le contexte window du NUI
-    SendNUIMessage({
-        type       = "setIdentifier",
-        identifier = license,
-        unique_id  = "" -- sera généré côté serveur
-    })
-end)
+-- Recharger l'apparence du perso actif
+RegisterCommand("reloadskin", function()
+    if not currentUniqueId then
+        debugLog("Aucun personnage actif (currentUniqueId nil)", "WARN")
+        return
+    end
+    debugLog("Reloadskin pour: " .. currentUniqueId, "INFO")
+    TriggerServerEvent("kt_character:reloadSkin", currentUniqueId)
+end, false)
 
--- ─── NUI Callbacks ────────────────────────────────────────────────────────
+-- Charger un personnage par unique_id
+RegisterCommand("loadchar", function(_, args)
+    if not args[1] then
+        debugLog("Usage: /loadchar [unique_id]", "WARN")
+        return
+    end
+    TriggerServerEvent("kt_character:loadCharacter", args[1])
+end, false)
 
--- Mise à jour de l'apparence en temps réel (preview)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- NUI CALLBACKS
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+-- ─── Preview temps réel (chaque changement de slider) ─────────────────────
 RegisterNUICallback("update", function(data, cb)
-    local ped = PlayerPedId()
-    debugLog("Mise à jour de l'apparence (preview)", "DEBUG")
+    debugLog("Preview update reçu", "DEBUG")
 
-    if not ped or ped == 0 then
-        debugLog("PED invalide pour update", "ERROR")
+    if not PlayerPedId() or PlayerPedId() == 0 then
         cb("error")
         return
     end
 
-    -- Changer le modèle si nécessaire
-    if data.gender then
-        local model = data.gender == "mp_f_freemode_01"
-            and GetHashKey("mp_f_freemode_01")
-            or  GetHashKey("mp_m_freemode_01")
-
-        if GetEntityModel(ped) ~= model then
-            RequestModel(model)
-            local timeout = 0
-            while not HasModelLoaded(model) and timeout < 1000 do
-                Wait(0)
-                timeout = timeout + 1
-            end
-
-            if HasModelLoaded(model) then
-                SetPlayerModel(PlayerId(), model)
-                ped = PlayerPedId()
-            else
-                debugLog("Impossible de charger le modèle: " .. tostring(model), "ERROR")
-            end
-        end
-    end
-
-    -- Cheveux
-    if data.hair ~= nil then
-        SetPedComponentVariation(ped, 2, data.hair, 0, 0)
-    end
-    if data.hairColor ~= nil then
-        SetPedHairColor(ped, data.hairColor, 0)
-    end
-
-    -- Barbe
-    if data.beard ~= nil then
-        SetPedHeadOverlay(ped, 1, data.beard, 1.0)
-    end
+    -- Appeler la fonction de preview de appearance.lua
+    Citizen.CreateThread(function()
+        ApplyPreview(data)
+    end)
 
     cb("ok")
 end)
 
--- Création finale du personnage
+-- ─── Création finale du personnage ────────────────────────────────────────
 RegisterNUICallback("createCharacter", function(data, cb)
-    debugLog("Demande de création de personnage", "INFO")
+    debugLog("Création de personnage", "INFO")
     TriggerServerEvent("kt_character:createCharacter", data)
     cb("ok")
 end)
 
--- ─── Personnage créé (retour serveur) ──────────────────────────────────────
-RegisterNetEvent("kt_character:created", function(character)
-    debugLog("Personnage créé avec succès", "INFO")
-
-    if not character then
-        debugLog("Données de personnage invalides", "ERROR")
+-- ─── Sauvegarder une tenue ────────────────────────────────────────────────
+RegisterNUICallback("saveOutfit", function(data, cb)
+    if not currentUniqueId then
+        cb("error_no_character")
         return
     end
+    data.unique_id = currentUniqueId
+    TriggerServerEvent("kt_character:saveOutfit", data)
+    cb("ok")
+end)
 
-    -- Appliquer le modèle définitif
-    local model = character.gender == "mp_f_freemode_01"
-        and GetHashKey("mp_f_freemode_01")
-        or  GetHashKey("mp_m_freemode_01")
-
-    RequestModel(model)
-    local timeout = 0
-    while not HasModelLoaded(model) and timeout < 1000 do
-        Wait(0)
-        timeout = timeout + 1
+-- ─── Charger la liste des tenues ──────────────────────────────────────────
+RegisterNUICallback("getOutfits", function(_, cb)
+    if not currentUniqueId then
+        cb("error_no_character")
+        return
     end
+    TriggerServerEvent("kt_character:getOutfits", { unique_id = currentUniqueId })
+    cb("ok")
+end)
 
-    if HasModelLoaded(model) then
-        SetPlayerModel(PlayerId(), model)
-        currentCharacterId = character.unique_id
+-- ─── Charger une tenue (par ID) ───────────────────────────────────────────
+RegisterNUICallback("loadOutfit", function(data, cb)
+    TriggerServerEvent("kt_character:loadOutfit", data)
+    cb("ok")
+end)
+
+-- ─── Supprimer une tenue ──────────────────────────────────────────────────
+RegisterNUICallback("deleteOutfit", function(data, cb)
+    if not currentUniqueId then
+        cb("error")
+        return
+    end
+    data.unique_id = currentUniqueId
+    TriggerServerEvent("kt_character:deleteOutfit", data)
+    cb("ok")
+end)
+
+-- ─── Focus caméra selon l'onglet actif ────────────────────────────────────
+RegisterNUICallback("tabChange", function(data, cb)
+    local tab = data and data.tab or "identity"
+    debugLog("Tab changé: " .. tab, "DEBUG")
+
+    if tab == "parents" or tab == "features" or tab == "overlays" then
+        FocusFace()       -- camera.lua
+    elseif tab == "clothing" then
+        FocusBody()       -- camera.lua
+    elseif tab == "tattoos" then
+        FocusFull()       -- camera.lua
     else
-        debugLog("Impossible de charger le modèle final", "ERROR")
+        FocusFace()
     end
 
-    -- Fermer l'interface
+    cb("ok")
+end)
+
+-- ─── Fermer le creator ────────────────────────────────────────────────────
+RegisterNUICallback("close", function(_, cb)
+    debugLog("Fermeture du creator", "INFO")
+    DestroyCam()  -- camera.lua
+    SetNuiFocus(false, false)
+    nuiOpen = false
+    cb("ok")
+end)
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- EVENTS SERVEUR → CLIENT
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+-- ─── Recevoir l'identifier ────────────────────────────────────────────────
+RegisterNetEvent("kt_character:sendIdentifier", function(license)
+    debugLog("Identifier reçu: " .. license, "INFO")
+    SendNUIMessage({
+        type       = "setIdentifier",
+        identifier = license,
+        unique_id  = currentUniqueId or "",
+    })
+end)
+
+-- ─── Personnage créé avec succès ──────────────────────────────────────────
+RegisterNetEvent("kt_character:created", function(character)
+    debugLog("Personnage créé: " .. character.firstname .. " " .. character.lastname, "INFO")
+
+    currentUniqueId = character.unique_id
+
+    -- Appliquer l'apparence complète
+    Citizen.CreateThread(function()
+        ApplyFullAppearance(character)
+    end)
+
+    -- Fermer l'UI
+    DestroyCam()
     SetNuiFocus(false, false)
     SendNUIMessage({ type = "close" })
     nuiOpen = false
 
     -- Notification
-    local msg = string.format("Bienvenue, %s %s!", character.firstname, character.lastname)
+    local msg = ("Bienvenue, %s %s!"):format(character.firstname, character.lastname)
     debugLog(msg, "INFO")
-    
-    -- Exemple avec ox_lib (décommentez si disponible)
+
+    -- ox_lib (décommentez si disponible)
     -- exports['ox_lib']:notify({
-    --     title = "Succès",
+    --     title = "Personnage créé",
     --     description = msg,
     --     type = 'success',
-    --     duration = 3000
+    --     duration = 4000
     -- })
 end)
 
--- ─── Erreur serveur ──────────────────────────────────────────────────────
+-- ─── Erreur serveur → afficher dans le NUI ────────────────────────────────
 RegisterNetEvent("kt_character:error", function(msg)
-    debugLog("Erreur serveur: " .. msg, "ERROR")
-    SendNUIMessage({ 
-        type = "error", 
-        message = msg 
-    })
+    debugLog("Erreur serveur: " .. tostring(msg), "ERROR")
+    SendNUIMessage({ type = "error", message = msg })
 end)
 
--- ─── Fermer le UI avec Escape ───────────────────────────────────────────
-RegisterNUICallback("close", function(_, cb)
-    debugLog("Fermeture du character creator", "INFO")
-    SetNuiFocus(false, false)
-    nuiOpen = false
-    cb("ok")
+-- ─── Tenue sauvegardée ────────────────────────────────────────────────────
+RegisterNetEvent("kt_character:outfitSaved", function(outfit)
+    debugLog("Tenue sauvegardée: " .. tostring(outfit.name), "INFO")
+    SendNUIMessage({ type = "outfitSaved", outfit = outfit })
 end)
 
--- ─── Application de l'apparence complète ──────────────────────────────────
-local function applyAppearance(data)
-    local ped = PlayerPedId()
-    
-    if not ped or ped == 0 then
-        debugLog("PED invalide pour applyAppearance", "ERROR")
-        return
-    end
+-- ─── Liste des tenues reçue ───────────────────────────────────────────────
+RegisterNetEvent("kt_character:outfitsList", function(outfits)
+    debugLog(("#%d tenues reçues"):format(#outfits), "INFO")
+    SendNUIMessage({ type = "outfitsList", outfits = outfits })
+end)
 
-    debugLog("Application de l'apparence complète", "DEBUG")
+-- ─── Tenue supprimée ──────────────────────────────────────────────────────
+RegisterNetEvent("kt_character:outfitDeleted", function(outfitId)
+    debugLog("Tenue supprimée ID: " .. tostring(outfitId), "INFO")
+    SendNUIMessage({ type = "outfitDeleted", id = outfitId })
+end)
 
-    -- Modèle
-    if data.gender then
-        local model = data.gender == "mp_f_freemode_01"
-            and GetHashKey("mp_f_freemode_01")
-            or  GetHashKey("mp_m_freemode_01")
-
-        RequestModel(model)
-        local timeout = 0
-        while not HasModelLoaded(model) and timeout < 1000 do
-            Wait(0)
-            timeout = timeout + 1
-        end
-
-        if HasModelLoaded(model) then
-            SetPlayerModel(PlayerId(), model)
-            ped = PlayerPedId()
-        end
-    end
-
-    -- Blend face (parents)
-    if data.parents then
-        SetPedHeadBlendData(
-            ped,
-            data.parents.mother, data.parents.father, 0,
-            data.parents.mother, data.parents.father, 0,
-            data.mixShape or 0.5, data.mixSkin or 0.5, 0.0,
-            false
-        )
-    end
-
-    -- Cheveux
-    if data.hair ~= nil then
-        SetPedComponentVariation(ped, 2, data.hair, 0, 0)
-        if data.hairColor then
-            SetPedHairColor(ped, data.hairColor, 0)
-        end
-    end
-
-    -- Barbe
-    if data.beard ~= nil then
-        SetPedHeadOverlay(ped, 1, data.beard, 1.0)
-    end
-end
-
-RegisterNetEvent("kt_appearance:update", applyAppearance)
-
--- ─── Charger un personnage ────────────────────────────────────────────────
-RegisterCommand("loadchar", function(source, args, rawCommand)
-    if not args[1] then
-        debugLog("Usage: /loadchar [unique_id]", "WARN")
-        return
-    end
-
-    local uniqueId = args[1]
-    debugLog("Chargement du personnage: " .. uniqueId, "INFO")
-    TriggerServerEvent("kt_character:loadCharacter", uniqueId)
-end, false)
-
--- ─── Event de joueur spawnant ─────────────────────────────────────────────
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- SPAWN → recharger l'apparence automatiquement
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 AddEventHandler("playerSpawned", function()
-    debugLog("Joueur spawné", "INFO")
+    debugLog("playerSpawned", "INFO")
+
+    if currentUniqueId then
+        debugLog("Rechargement skin pour: " .. currentUniqueId, "INFO")
+        TriggerServerEvent("kt_character:reloadSkin", currentUniqueId)
+    else
+        debugLog("Aucun perso actif au spawn", "WARN")
+    end
 end)
 
--- ─── Event de déconnexion ────────────────────────────────────────────────
-AddEventHandler("playerDropped", function(reason)
-    debugLog("Joueur déconnecté: " .. (reason or "raison inconnue"), "INFO")
-    nuiOpen = false
-    currentCharacterId = nil
+-- ─── Déconnexion ──────────────────────────────────────────────────────────
+AddEventHandler("playerDropped", function()
+    nuiOpen         = false
+    currentUniqueId = nil
 end)
 
--- ─── Informations au démarrage ────────────────────────────────────────────
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- DÉMARRAGE
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Citizen.CreateThread(function()
     Wait(1000)
-    debugLog("Client kt_character v" .. VERSION .. " chargé", "INFO")
-    debugLog("Utilisez /character pour ouvrir le creator", "INFO")
+    debugLog("kt_character client v" .. VERSION .. " chargé", "INFO")
+    debugLog("/character → ouvrir le creator", "INFO")
+    debugLog("/reloadskin → recharger l'apparence", "INFO")
 end)
