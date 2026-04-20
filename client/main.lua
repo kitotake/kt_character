@@ -39,6 +39,35 @@ RegisterCommand("loadchar", function(_, args)
     TriggerServerEvent("kt_character:loadCharacter", args[1])
 end, false)
 
+
+-- ─── Contrôles caméra depuis l'UI ────────────────────────────────────
+-- Déclenché par les boutons du panneau caméra (rotate, zoom, focus…)
+RegisterNUICallback("cameraControl", function(data, cb)
+    local action = data and data.action or ""
+    if HandleCameraControl then
+        HandleCameraControl(action)
+    end
+    cb("ok")
+end)
+ 
+-- ─── tabChange (inchangé — met aussi à jour le focus caméra) ─────────
+RegisterNUICallback("tabChange", function(data, cb)
+    local tab = data and data.tab or "identity"
+    if tab == "parents" or tab == "features" or tab == "overlays" then
+        FocusFace()
+    elseif tab == "hair" then
+        FocusHair()
+    elseif tab == "clothing" then
+        FocusBody()
+    elseif tab == "tattoos" then
+        FocusFull()
+    else
+        FocusFace()
+    end
+    cb("ok")
+end)
+ 
+
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- NUI CALLBACKS
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -1,91 +1,160 @@
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- KT CHARACTER - CAMERA CLIENT
--- Caméra scriptée avec focus dynamique par zone du creator
+-- Caméra scriptée avec focus dynamique + contrôles rotation/zoom
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-local cam         = nil
-local camActive   = false
+local cam          = nil
+local camActive    = false
+
+-- Angle et distance courants (contrôlables via boutons UI)
+local camAngle     = 0.0     -- degrés autour du ped (0 = face à nous)
+local camDistance  = 1.0     -- multiplicateur de distance (1.0 = normal)
+local camFocusKey  = "face"  -- preset actif
 
 -- Offset depuis le ped selon la zone de focus
--- { offsetX, offsetY, offsetZ, pointAtZ }
+-- { offsetX, offsetZ, pointAtZ }  (offsetX = distance latérale de base)
 local CAM_PRESETS = {
-    face    = { 0.55,  0.0,  0.70, 0.65 }, -- Visage (parents, traits, overlays)
-    hair    = { 0.55,  0.0,  0.72, 0.68 }, -- Cheveux (un peu plus haut)
-    body    = { 1.20,  0.0,  0.20, 0.30 }, -- Corps / vêtements
-    full    = { 1.80,  0.0, -0.10, 0.20 }, -- Vue complète (tatouages)
-    default = { 1.00,  0.0,  0.70, 0.60 }, -- Défaut
+    face    = { dist = 0.65, z = 0.68, pointZ = 0.65 },
+    hair    = { dist = 0.60, z = 0.72, pointZ = 0.70 },
+    body    = { dist = 1.20, z = 0.20, pointZ = 0.30 },
+    full    = { dist = 1.80, z = -0.10, pointZ = 0.20 },
+    default = { dist = 1.00, z = 0.60, pointZ = 0.60 },
 }
 
--- ─── Créer la caméra au démarrage du creator ──────────────────────────────
+-- ─── Calcul position orbite ───────────────────────────────────────────
+local function orbitPosition(pedCoords, preset, angle, distMult)
+    local rad = math.rad(angle)
+    local d   = preset.dist * distMult
+
+    return
+        pedCoords.x + math.sin(rad) * d,
+        pedCoords.y - math.cos(rad) * d,
+        pedCoords.z + preset.z
+end
+
+-- ─── Appliquer la caméra au preset + angle/zoom courants ─────────────
+local function applyCam(presetKey, angle, distMult, interp)
+    if not camActive then return end
+
+    local ped     = PlayerPedId()
+    local coords  = GetEntityCoords(ped)
+    local preset  = CAM_PRESETS[presetKey] or CAM_PRESETS.default
+
+    local cx, cy, cz = orbitPosition(coords, preset, angle, distMult)
+
+    if interp and cam then
+        -- Créer une nouvelle caméra et interpoler
+        local newCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+        SetCamCoord(newCam, cx, cy, cz)
+        PointCamAtEntity(newCam, ped, 0.0, 0.0, preset.pointZ, true)
+        SetCamFov(newCam, presetKey == "full" and 55.0 or 45.0)
+        SetCamActive(newCam, true)
+
+        SetCamActiveWithInterp(newCam, cam, 350, 1, 1)
+        Wait(370)
+
+        DestroyCam(cam, false)
+        cam = newCam
+    elseif cam then
+        SetCamCoord(cam, cx, cy, cz)
+        PointCamAtEntity(cam, ped, 0.0, 0.0, preset.pointZ, true)
+        SetCamFov(cam, presetKey == "full" and 55.0 or 45.0)
+    end
+end
+
+-- ─── Créer la caméra au démarrage du creator ──────────────────────────
 function CreateCharacterCam()
     if camActive then return end
+
+    camAngle    = 0.0
+    camDistance = 1.0
+    camFocusKey = "face"
 
     local ped    = PlayerPedId()
     local coords = GetEntityCoords(ped)
 
-    -- Placer le ped dans une position neutre
     FreezeEntityPosition(ped, true)
     SetEntityVisible(ped, true, false)
 
-    -- Tourner le ped face à nous
-    local heading = GetEntityHeading(ped)
-    SetEntityHeading(ped, heading)
-
     cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
 
-    -- Position initiale : focus visage
     local preset = CAM_PRESETS.face
-    SetCamCoord(cam,
-        coords.x + preset[1],
-        coords.y + preset[2],
-        coords.z + preset[3]
-    )
-    PointCamAtEntity(cam, ped, 0.0, 0.0, preset[4], true)
-    SetCamFov(cam, 45.0)
+    local cx, cy, cz = orbitPosition(coords, preset, camAngle, camDistance)
 
+    SetCamCoord(cam, cx, cy, cz)
+    PointCamAtEntity(cam, ped, 0.0, 0.0, preset.pointZ, true)
+    SetCamFov(cam, 45.0)
     SetCamActive(cam, true)
     RenderScriptCams(true, true, 800, true, true)
 
     camActive = true
 end
 
--- ─── Déplacer la caméra selon un preset ───────────────────────────────────
-local function moveCamToPreset(presetKey)
-    if not camActive or not cam then return end
-
-    local ped    = PlayerPedId()
-    local coords = GetEntityCoords(ped)
-    local preset = CAM_PRESETS[presetKey] or CAM_PRESETS.default
-
-    -- Transition fluide
-    local newCam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
-    SetCamCoord(newCam,
-        coords.x + preset[1],
-        coords.y + preset[2],
-        coords.z + preset[3]
-    )
-    PointCamAtEntity(newCam, ped, 0.0, 0.0, preset[4], true)
-    SetCamFov(newCam, presetKey == "full" and 55.0 or 45.0)
-    SetCamActive(newCam, true)
-
-    -- Interpolation 400ms
-    SetCamActiveWithInterp(newCam, cam, 400, 1, 1)
-
-    Wait(420)
-
-    -- Nettoyer l'ancienne caméra
-    DestroyCam(cam, false)
-    cam = newCam
+-- ─── Focus par onglet ─────────────────────────────────────────────────
+function FocusFace()
+    camFocusKey = "face"
+    applyCam(camFocusKey, camAngle, camDistance, true)
 end
 
--- ─── Focus par onglet ─────────────────────────────────────────────────────
-function FocusFace()  moveCamToPreset("face")  end
-function FocusHair()  moveCamToPreset("hair")  end
-function FocusBody()  moveCamToPreset("body")  end
-function FocusFull()  moveCamToPreset("full")  end
+function FocusHair()
+    camFocusKey = "hair"
+    applyCam(camFocusKey, camAngle, camDistance, true)
+end
 
--- ─── Détruire la caméra ───────────────────────────────────────────────────
-function DestroyCam()
+function FocusBody()
+    camFocusKey = "body"
+    applyCam(camFocusKey, camAngle, camDistance, true)
+end
+
+function FocusFull()
+    camFocusKey = "full"
+    applyCam(camFocusKey, camAngle, camDistance, true)
+end
+
+-- ─── Contrôles caméra (depuis NUI) ───────────────────────────────────
+local ROTATE_STEP  = 20.0   -- degrés par clic
+local ZOOM_STEP    = 0.15   -- multiplicateur zoom
+local ZOOM_MIN     = 0.4
+local ZOOM_MAX     = 2.5
+
+function HandleCameraControl(action)
+    if not camActive then return end
+
+    if action == "rotateLeft" then
+        camAngle = (camAngle - ROTATE_STEP) % 360
+        applyCam(camFocusKey, camAngle, camDistance, false)
+
+    elseif action == "rotateRight" then
+        camAngle = (camAngle + ROTATE_STEP) % 360
+        applyCam(camFocusKey, camAngle, camDistance, false)
+
+    elseif action == "zoomIn" then
+        camDistance = math.max(ZOOM_MIN, camDistance - ZOOM_STEP)
+        applyCam(camFocusKey, camAngle, camDistance, false)
+
+    elseif action == "zoomOut" then
+        camDistance = math.min(ZOOM_MAX, camDistance + ZOOM_STEP)
+        applyCam(camFocusKey, camAngle, camDistance, false)
+
+    elseif action == "focusHead" then
+        FocusFace()
+
+    elseif action == "focusBody" then
+        FocusBody()
+
+    elseif action == "focusFull" then
+        FocusFull()
+
+    elseif action == "resetCam" then
+        camAngle    = 0.0
+        camDistance = 1.0
+        camFocusKey = "face"
+        applyCam(camFocusKey, camAngle, camDistance, true)
+    end
+end
+
+-- ─── Détruire la caméra ───────────────────────────────────────────────
+function DestroyCharacterCam()
     if cam then
         RenderScriptCams(false, true, 800, true, true)
         Wait(820)
@@ -96,5 +165,11 @@ function DestroyCam()
     local ped = PlayerPedId()
     FreezeEntityPosition(ped, false)
 
-    camActive = false
+    camActive   = false
+    camAngle    = 0.0
+    camDistance = 1.0
 end
+
+-- Alias pour compatibilité avec main.lua qui appelle DestroyCam()
+-- (évite collision avec la native GTA DestroyCam)
+DestroyCam = DestroyCharacterCam

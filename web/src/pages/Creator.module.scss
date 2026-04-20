@@ -1,92 +1,374 @@
 @use "../style/variables.scss" as *;
 @use "../style/mixins.scss" as *;
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CREATOR PAGE — WIZARD + CAMERA PANEL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-// ━━━━━━━━━━━━━━━━━━━━━━━
-// CREATOR PAGE STYLES
-// ━━━━━━━━━━━━━━━━━━━━━━━
-
-// ── ANIMATIONS ────────────────────────────────────────────────────────────
 @keyframes containerSlideIn {
-  from {
-    transform: translateX(-32px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+  from { transform: translateX(-28px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
 }
-
+@keyframes camSlideIn {
+  from { transform: translateX(28px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
 @keyframes messageSlideIn {
-  from {
-    transform: translateY(-12px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(-10px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
 }
-
 @keyframes messageFadeOut {
-  to {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
+  to { opacity: 0; transform: translateY(-10px); }
 }
 
-// ── MAIN CONTAINER ────────────────────────────────────────────────────────
+// ── MAIN PANEL ────────────────────────────────────────────────────────
 .container {
   position: fixed;
   left: $spacing-xl;
   top: $spacing-xl;
-  width: 380px;
+  width: 370px;
   max-height: calc(100vh - 48px);
-  
   @include panel;
-  /*box-shadow: $shadow-xl;*/
   animation: containerSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
     background: rgba(0, 217, 255, 0.3);
-    border-radius: 3px;
-
-    &:hover {
-      background: rgba(0, 217, 255, 0.5);
-    }
-  }
-
-  @include responsive-breakpoint("md") {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: 100%;
-    max-height: none;
-    margin: $spacing-lg;
+    border-radius: 2px;
   }
 }
 
-// ── MESSAGES ──────────────────────────────────────────────────────────────
-.error,
-.success {
-  @include flex-col($spacing-sm);
-  padding: $spacing-md $spacing-lg;
+// ── CAMERA PANEL (right side) ─────────────────────────────────────────
+.camPanel {
+  position: fixed;
+  right: $spacing-xl;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 88px;
+  @include flex-col(6px);
+  align-items: stretch;
+  animation: camSlideIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  background: rgba(10, 10, 18, 0.88);
+  border: 1px solid rgba(0, 217, 255, 0.15);
   border-radius: $radius-sm;
-  margin-bottom: $spacing-md;
+  padding: $spacing-sm;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0,217,255,0.06);
+}
+
+.camTitle {
+  font-size: 9px;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: $muted;
+  text-align: center;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+  margin-bottom: 2px;
+}
+
+.camBtn {
+  @include flex-col(3px);
+  align-items: center;
+  justify-content: center;
+  padding: 7px 4px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(0, 217, 255, 0.1) !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+  width: 100%;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.14) !important;
+    border-color: rgba(0, 217, 255, 0.4) !important;
+    transform: scale(1.04) !important;
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.15) !important;
+  }
+
+  &:active {
+    transform: scale(0.96) !important;
+    background: rgba(0, 217, 255, 0.22) !important;
+  }
+}
+
+.camIcon {
+  font-size: 18px;
+  line-height: 1;
+  color: $accent;
+}
+
+.camLabel {
+  font-size: 9px;
+  color: $muted;
+  text-align: center;
+  line-height: 1.2;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.02em;
+}
+
+// ── STEP PROGRESS BAR ─────────────────────────────────────────────────
+.stepBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding: $spacing-md $spacing-lg $spacing-sm;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.08);
+  flex-shrink: 0;
+
+  // track line behind dots
+  &::before {
+    content: '';
+    position: absolute;
+    left: calc($spacing-lg + 14px);
+    right: calc($spacing-lg + 14px);
+    top: calc($spacing-md + 14px);
+    height: 1px;
+    background: rgba(0, 217, 255, 0.12);
+    z-index: 0;
+  }
+}
+
+.stepProgress {
+  position: absolute;
+  left: calc($spacing-lg + 14px);
+  top: calc($spacing-md + 14px);
+  height: 1px;
+  background: linear-gradient(90deg, $accent, rgba(0,217,255,0.4));
+  z-index: 0;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stepDot {
+  position: relative;
+  z-index: 1;
+  @include flex-col(4px);
+  align-items: center;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  cursor: default !important;
+  transform: none !important;
+  box-shadow: none !important;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.stepDotIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: $muted;
+  transition: $transition;
+  line-height: 1;
+}
+
+.stepDotLabel {
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: $muted;
+  text-align: center;
+  white-space: nowrap;
+  transition: $transition;
+}
+
+.stepDone {
+  cursor: pointer !important;
+
+  .stepDotIcon {
+    background: rgba(0, 217, 255, 0.12);
+    border-color: rgba(0, 217, 255, 0.3);
+    color: $accent;
+    font-size: 10px;
+  }
+  .stepDotLabel { color: rgba(0, 217, 255, 0.6); }
+
+  &:hover .stepDotIcon {
+    background: rgba(0, 217, 255, 0.2);
+    border-color: $accent;
+  }
+}
+
+.stepActive {
+  .stepDotIcon {
+    background: $accent;
+    border-color: $accent;
+    color: #000;
+    font-weight: $font-weight-bold;
+    box-shadow: 0 0 12px rgba(0, 217, 255, 0.5);
+    animation: glow 2s ease-in-out infinite;
+  }
+  .stepDotLabel {
+    color: $accent;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(0,217,255,0.4); }
+  50%       { box-shadow: 0 0 18px rgba(0,217,255,0.7); }
+}
+
+// ── STEP HEADER ───────────────────────────────────────────────────────
+.stepHeader {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-lg $spacing-xs;
+  flex-shrink: 0;
+}
+
+.stepNum {
+  font-size: $font-size-xs;
+  font-family: $font-family-mono;
+  color: $muted;
+  letter-spacing: 0.08em;
+}
+
+.stepTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $text;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+// ── STEP CONTENT (scrollable zone) ────────────────────────────────────
+.stepContent {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 $spacing-md $spacing-sm;
+  min-height: 0;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, 0.25);
+    border-radius: 2px;
+  }
+}
+
+// ── NAV ROW ───────────────────────────────────────────────────────────
+.navRow {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-md $spacing-md;
+  border-top: 1px solid rgba(0, 217, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.navBtn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: $text-secondary !important;
+  font-size: $font-size-sm !important;
+  padding: $spacing-sm $spacing-md !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  border-radius: $radius-sm !important;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  &:disabled {
+    opacity: 0.3 !important;
+    cursor: not-allowed !important;
+  }
+}
+
+.navBtnNext {
+  background: rgba(0, 217, 255, 0.15) !important;
+  border: 1px solid rgba(0, 217, 255, 0.35) !important;
+  color: $accent !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-bold !important;
+  padding: $spacing-sm $spacing-lg !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  border-radius: $radius-sm !important;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.25) !important;
+    border-color: $accent !important;
+    box-shadow: 0 0 16px rgba(0, 217, 255, 0.2) !important;
+    transform: translateY(-1px) !important;
+  }
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────
+.submitBtn {
+  flex: 1;
+  padding: $spacing-sm $spacing-lg !important;
+  background: linear-gradient(135deg, $accent, $accent-light) !important;
+  border: none !important;
+  border-radius: $radius-sm !important;
+  color: #000 !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-bold !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+  transition: $transition !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: $shadow-glow !important;
+  transform: none !important;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, $accent-light, $accent) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: $shadow-xl, 0 0 32px rgba(0, 217, 255, 0.4) !important;
+
+    &::before { transform: translateX(100%); }
+  }
+
+  &:active { transform: translateY(0) !important; }
+}
+
+// ── MESSAGES ──────────────────────────────────────────────────────────
+.error, .success {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  margin: $spacing-xs $spacing-md;
   font-size: $font-size-sm;
   font-weight: $font-weight-semibold;
   animation: messageSlideIn 0.25s ease-out;
+  flex-shrink: 0;
 }
 
 .error {
@@ -102,7 +384,7 @@
   animation: messageSlideIn 0.25s ease-out, messageFadeOut 0.25s ease-in 2.75s forwards;
 }
 
-// ── GENDER PICKER ─────────────────────────────────────────────────────────
+// ── GENDER PICKER ─────────────────────────────────────────────────────
 .genderRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -121,148 +403,21 @@
   transition: $transition !important;
   transform: none !important;
   box-shadow: none !important;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, transparent 100%);
-    opacity: 0;
-    transition: opacity $transition;
-  }
 
   &:hover {
     background: rgba(255, 255, 255, 0.06) !important;
     border-color: rgba(0, 217, 255, 0.3) !important;
     transform: translateY(-2px) !important;
-
-    &::before {
-      opacity: 1;
-    }
   }
 
   &.genderActive {
     background: rgba(0, 217, 255, 0.15) !important;
     border-color: $accent !important;
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.25) !important;
+    box-shadow: 0 0 18px rgba(0, 217, 255, 0.2) !important;
     transform: none !important;
-
-    &::before {
-      opacity: 1;
-    }
   }
 }
 
-.genderIcon {
-  font-size: 28px;
-  line-height: 1;
-  color: $accent;
-  transition: transform $transition;
-
-  .genderBtn:hover & {
-    transform: scale(1.1);
-  }
-}
-
-.genderLabel {
-  font-size: $font-size-md;
-  font-weight: $font-weight-bold;
-  color: $text;
-}
-
-.genderSub {
-  font-size: $font-size-xs;
-  color: $muted;
-  font-family: $font-family-mono;
-  letter-spacing: 0.05em;
-}
-
-// ── SUBMIT BUTTON ─────────────────────────────────────────────────────────
-.submitBtn {
-  width: 100%;
-  margin-top: $spacing-lg;
-  padding: $spacing-md $spacing-lg !important;
-  background: linear-gradient(135deg, $accent, $accent-light) !important;
-  border: none !important;
-  border-radius: $radius-sm !important;
-  color: #000 !important;
-  font-size: $font-size-md !important;
-  font-weight: $font-weight-bold !important;
-  letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
-  cursor: pointer;
-  transition: $transition !important;
-  position: relative;
-  overflow: hidden;
-  box-shadow: $shadow-lg, $shadow-glow;
-  transform: none !important;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
-  }
-
-  &:hover {
-    background: linear-gradient(135deg, $accent-light, $accent) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: $shadow-xl, 0 0 40px rgba(0, 217, 255, 0.4) !important;
-
-    &::before {
-      transform: translateX(100%);
-    }
-  }
-
-  &:active {
-    transform: translateY(0) !important;
-    box-shadow: $shadow-md !important;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-// ── SECTION HEADERS ───────────────────────────────────────────────────────
-.sectionHeader {
-  @include flex-row($spacing-sm);
-  align-items: center;
-  padding-bottom: $spacing-sm;
-  margin-bottom: $spacing-md;
-  border-bottom: 1px solid rgba(0, 217, 255, 0.1);
-}
-
-.sectionIcon {
-  font-size: 18px;
-  color: $accent;
-  opacity: 0.8;
-}
-
-.sectionTitle {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-bold;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: $muted;
-}
-
-// ── RESPONSIVE ────────────────────────────────────────────────────────────
-@include responsive-breakpoint("md") {
-  .container {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: 100%;
-    max-height: none;
-  }
-
-  .genderRow {
-    grid-template-columns: 1fr;
-  }
-}
+.genderIcon  { font-size: 28px; line-height: 1; color: $accent; }
+.genderLabel { font-size: $font-size-md; font-weight: $font-weight-bold; color: $text; }
+.genderSub   { font-size: $font-size-xs; color: $muted; font-family: $font-family-mono; letter-spacing: 0.05em; }
