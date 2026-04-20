@@ -25,13 +25,14 @@ RegisterNetEvent("kt_character:createCharacter", function(data)
         unique_id  = unique_id,
         firstname  = string.trim(data.firstname),
         lastname   = string.trim(data.lastname),
+        dateofbirth  = data.dateofbirth,
         position   = Config.DEFAULT_SPAWN,
         heading    = Config.DEFAULT_HEADING
     }
 
     exports.oxmysql:execute(
-        "INSERT INTO characters (identifier, unique_id, firstname, lastname) VALUES (?, ?, ?, ?)",
-        {character.identifier, character.unique_id, character.firstname, character.lastname}
+        "INSERT INTO characters (identifier, unique_id, firstname, lastname, dateofbirth) VALUES (?, ?, ?, ?, ?)",
+        {character.identifier, character.unique_id, character.firstname, character.lastname, character.dateofbirth}
     )
 
     TriggerClientEvent("kt_character:created", src, character)
