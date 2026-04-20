@@ -1,10 +1,6 @@
 @use "./variables" as *;
 @use "./mixins" as *;
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// GLOBAL STYLES
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -15,8 +11,10 @@ html {
   scroll-behavior: smooth;
 }
 
+// ⚠️ IMPORTANT FiveM NUI : body et #root DOIVENT être transparents
+// sinon le fond noir masque le jeu même quand le creator est fermé
 body {
-  background: $bg;
+  background: transparent;
   color: $text;
   font-family: $font-family-body;
   font-size: $font-size-base;
@@ -28,7 +26,6 @@ body {
   @include scroll-smooth;
 }
 
-// ── TYPOGRAPHY ────────────────────────────────────────────────────────────
 h1, h2, h3, h4, h5, h6 {
   font-family: $font-family-display;
   font-weight: $font-weight-bold;
@@ -36,23 +33,10 @@ h1, h2, h3, h4, h5, h6 {
   color: $text;
 }
 
-h1 {
-  font-size: $font-size-4xl;
-  letter-spacing: -0.02em;
-}
-
-h2 {
-  font-size: $font-size-3xl;
-  letter-spacing: -0.01em;
-}
-
-h3 {
-  font-size: $font-size-2xl;
-}
-
-h4 {
-  font-size: $font-size-xl;
-}
+h1 { font-size: $font-size-4xl; letter-spacing: -0.02em; }
+h2 { font-size: $font-size-3xl; letter-spacing: -0.01em; }
+h3 { font-size: $font-size-2xl; }
+h4 { font-size: $font-size-xl; }
 
 p {
   color: $text-secondary;
@@ -63,13 +47,9 @@ a {
   color: $accent;
   text-decoration: none;
   transition: color $transition;
-
-  &:hover {
-    color: $accent-light;
-  }
+  &:hover { color: $accent-light; }
 }
 
-// ── BUTTONS ────────────────────────────────────────────────────────────────
 button {
   @include button-primary;
 }
@@ -83,7 +63,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-// ── INPUTS ────────────────────────────────────────────────────────────────
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -115,7 +94,6 @@ input[type="range"] {
     cursor: pointer;
     box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.2);
     transition: $transition;
-
     &:hover {
       transform: scale(1.25);
       box-shadow: 0 0 0 4px rgba(0, 217, 255, 0.4), $shadow-glow;
@@ -131,7 +109,6 @@ input[type="range"] {
     border: none;
     box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.2);
     transition: $transition;
-
     &:hover {
       transform: scale(1.25);
       box-shadow: 0 0 0 4px rgba(0, 217, 255, 0.4), $shadow-glow;
@@ -139,76 +116,29 @@ input[type="range"] {
   }
 }
 
-// ── SCROLLBAR ────────────────────────────────────────────────────────────
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
   background: rgba(0, 217, 255, 0.3);
   border-radius: 4px;
   transition: background $transition;
-
-  &:hover {
-    background: rgba(0, 217, 255, 0.5);
-  }
+  &:hover { background: rgba(0, 217, 255, 0.5); }
 }
 
-// ── ANIMATIONS ────────────────────────────────────────────────────────────
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
+.container { @include container; }
+.text-accent { color: $accent; }
+.text-muted { color: $muted; }
+.text-success { color: $success; }
+.text-error { color: $error; }
+.truncate { @include truncate; }
+.hidden { display: none !important; }
+.invisible { @include visually-hidden; }
 
-// ── UTILITY CLASSES ───────────────────────────────────────────────────────
-.container {
-  @include container;
-}
-
-.text-accent {
-  color: $accent;
-}
-
-.text-muted {
-  color: $muted;
-}
-
-.text-success {
-  color: $success;
-}
-
-.text-error {
-  color: $error;
-}
-
-.truncate {
-  @include truncate;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.invisible {
-  @include visually-hidden;
-}
-
-// ── ROOT ELEMENT ───────────────────────────────────────────────────────────
+// ⚠️ #root transparent — le panel du creator a son propre background
 #root {
   width: 100%;
   min-height: 100vh;
+  background: transparent;
   display: flex;
   flex-direction: column;
 }

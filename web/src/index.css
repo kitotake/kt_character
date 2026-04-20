@@ -1,0 +1,427 @@
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 1;
+        transform: translateY(0)
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-16px)
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1
+    }
+
+    to {
+        opacity: 0
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: .5
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0
+    }
+
+    100% {
+        background-position: 1000px 0
+    }
+}
+
+@keyframes glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(0, 217, 255, .3)
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(0, 217, 255, .5)
+    }
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0
+}
+
+html {
+    scroll-behavior: smooth
+}
+
+body {
+   /* background: #0f0f15;*/
+    color: #f8f8ff;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth
+}
+
+body::-webkit-scrollbar {
+    width: 6px;
+    height: 6px
+}
+
+body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0)
+}
+
+body::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, .3);
+    border-radius: 3px
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 217, 255, .5)
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #f8f8ff
+}
+
+h1 {
+    font-size: 36px;
+    letter-spacing: -0.02em
+}
+
+h2 {
+    font-size: 28px;
+    letter-spacing: -0.01em
+}
+
+h3 {
+    font-size: 22px
+}
+
+h4 {
+    font-size: 18px
+}
+
+p {
+    color: #d0d0e8;
+    line-height: 1.7
+}
+
+a {
+    color: #00d9ff;
+    text-decoration: none;
+    transition: color .25s cubic-bezier(0.4, 0, 0.2, 1)
+}
+
+a:hover {
+    color: #40ffff
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed
+}
+
+button {
+    background: #00d9ff;
+    color: #000;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .48)
+}
+
+button:hover:not(:disabled) {
+    background: #40ffff;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .56), 0 0 20px rgba(0, 217, 255, .3);
+    transform: translateY(-2px)
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0)
+}
+
+button.secondary {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .25s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap
+}
+
+button.secondary:disabled {
+    opacity: .5;
+    cursor: not-allowed
+}
+
+button.secondary {
+    background: rgba(0, 217, 255, .1);
+    color: #00d9ff;
+    border: 1px solid rgba(0, 217, 255, .3)
+}
+
+button.secondary:hover:not(:disabled) {
+    background: rgba(0, 217, 255, .15);
+    border-color: #00d9ff
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed
+}
+
+input[type=text],
+input[type=email],
+input[type=password],
+input[type=date],
+input[type=time],
+input[type=number],
+select,
+textarea {
+    width: 100%;
+    background: hsla(0, 0%, 100%, .04);
+    border: 1px solid rgba(0, 217, 255, .15);
+    color: #f8f8ff;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    transition: .25s cubic-bezier(0.4, 0, 0.2, 1)
+}
+
+input[type=text]::placeholder,
+input[type=email]::placeholder,
+input[type=password]::placeholder,
+input[type=date]::placeholder,
+input[type=time]::placeholder,
+input[type=number]::placeholder,
+select::placeholder,
+textarea::placeholder {
+    color: #707084
+}
+
+input[type=text]:hover,
+input[type=email]:hover,
+input[type=password]:hover,
+input[type=date]:hover,
+input[type=time]:hover,
+input[type=number]:hover,
+select:hover,
+textarea:hover {
+    background: hsla(0, 0%, 100%, .06);
+    border-color: rgba(0, 217, 255, .25)
+}
+
+input[type=text]:focus,
+input[type=email]:focus,
+input[type=password]:focus,
+input[type=date]:focus,
+input[type=time]:focus,
+input[type=number]:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    background: rgba(0, 217, 255, .08);
+    border-color: #00d9ff;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, .2)
+}
+
+input[type=text]:disabled,
+input[type=email]:disabled,
+input[type=password]:disabled,
+input[type=date]:disabled,
+input[type=time]:disabled,
+input[type=number]:disabled,
+select:disabled,
+textarea:disabled {
+    opacity: .5;
+    cursor: not-allowed
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: hsla(0, 0%, 100%, .1);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #00d9ff;
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(0, 217, 255, .2);
+    transition: .25s cubic-bezier(0.4, 0, 0.2, 1)
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.25);
+    box-shadow: 0 0 0 4px rgba(0, 217, 255, .4), 0 0 20px rgba(0, 217, 255, .3)
+}
+
+input[type=range]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #00d9ff;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 0 3px rgba(0, 217, 255, .2);
+    transition: .25s cubic-bezier(0.4, 0, 0.2, 1)
+}
+
+input[type=range]::-moz-range-thumb:hover {
+    transform: scale(1.25);
+    box-shadow: 0 0 0 4px rgba(0, 217, 255, .4), 0 0 20px rgba(0, 217, 255, .3)
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0)
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, .3);
+    border-radius: 4px;
+    transition: background .25s cubic-bezier(0.4, 0, 0.2, 1)
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 217, 255, .5)
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%
+    }
+
+    50% {
+        background-position: 100% 50%
+    }
+
+    100% {
+        background-position: 0% 50%
+    }
+}
+
+.container {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 24px
+}
+
+.text-accent {
+    color: #00d9ff
+}
+
+.text-muted {
+    color: #707084
+}
+
+.text-success {
+    color: #10b981
+}
+
+.text-error {
+    color: #ef4444
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.hidden {
+    display: none !important
+}
+
+.invisible {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0
+}
+
+#root {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column
+}
+
+/*# sourceMappingURL=index.css.map */

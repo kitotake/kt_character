@@ -30,10 +30,6 @@ import type {
   Tattoo,
 } from "../types/appearance.types";
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// TYPES
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 interface IdentityData {
   identifier:  string;
   unique_id:   string;
@@ -43,23 +39,16 @@ interface IdentityData {
   gender: "mp_m_freemode_01" | "mp_f_freemode_01";
 }
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// VALIDATION
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 function validateIdentity(identity: IdentityData): Record<string, string> {
   const errors: Record<string, string> = {};
-
   if (!identity.firstname.trim())
     errors.firstname = "Le prénom est requis";
   else if (identity.firstname.trim().length < 2)
     errors.firstname = "Minimum 2 caractères";
-
   if (!identity.lastname.trim())
     errors.lastname = "Le nom est requis";
   else if (identity.lastname.trim().length < 2)
     errors.lastname = "Minimum 2 caractères";
-
   if (!identity.dateofbirth)
     errors.dateofbirth = "La date de naissance est requise";
   else {
@@ -68,13 +57,8 @@ function validateIdentity(identity: IdentityData): Record<string, string> {
     if (age < 18) errors.dateofbirth = "Vous devez avoir au moins 18 ans";
     if (age > 100) errors.dateofbirth = "Date invalide";
   }
-
   return errors;
 }
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ONGLETS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 const CREATOR_TABS = [
   { id: "identity", label: "Identité",  icon: "👤" },
@@ -86,11 +70,10 @@ const CREATOR_TABS = [
   { id: "tattoos",  label: "Tatouages", icon: "💉" },
 ];
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// COMPOSANT PRINCIPAL
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 export default function Creator() {
+  // ─── Visibilité (contrôlée par NUI message "open" / "close") ──────────
+  const [visible, setVisible] = useState(false);
+
   // ─── État UI ──────────────────────────────────────────────────────────
   const [tab,         setTabState] = useState("identity");
   const [errors,      setErrors]   = useState<Record<string, string>>({});
@@ -99,8 +82,8 @@ export default function Creator() {
 
   // ─── Identité ─────────────────────────────────────────────────────────
   const [identity, setIdentity] = useState<IdentityData>({
-    identifier:  (window as any).__kt_identifier ?? "",
-    unique_id:   (window as any).__kt_unique_id  ?? "",
+    identifier:  "",
+    unique_id:   "",
     firstname:   "",
     lastname:    "",
     dateofbirth: "",
@@ -152,35 +135,46 @@ export default function Creator() {
     tattoos,
   }), [identity, headBlend, faceFeatures, headOverlays, hair, components, props, tattoos]);
 
-  // ─── Envoyer le preview au client Lua (debounced implicitement par React) ─
   const sendPreview = useCallback(async (payload: object) => {
     setServerError("");
-    const ok = await nuiFetch("update", payload);
-    if (!ok) setServerError("Erreur de connexion");
+    await nuiFetch("update", payload);
   }, [nuiFetch]);
 
-  // ─── Changement d'onglet → focus caméra ──────────────────────────────
   const setTab = useCallback((newTab: string) => {
     setTabState(newTab);
     nuiFetch("tabChange", { tab: newTab });
   }, [nuiFetch]);
 
-  // ─── Messages NUI entrants (identifier, erreurs) ──────────────────────
+  // ─── Messages NUI entrants ────────────────────────────────────────────
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       const msg = event.data;
       if (!msg || !msg.type) return;
 
-      if (msg.type === "setIdentifier") {
-        setIdentity((prev) => ({
-          ...prev,
-          identifier: msg.identifier ?? prev.identifier,
-          unique_id:  msg.unique_id  ?? prev.unique_id,
-        }));
-      } else if (msg.type === "error") {
-        setServerError(msg.message ?? "Erreur inconnue");
-      } else if (msg.type === "close") {
-        // Le serveur peut forcer la fermeture
+      switch (msg.type) {
+        case "open":
+          setVisible(true);
+          setTabState("identity");
+          setErrors({});
+          setServerError("");
+          setSuccessMsg("");
+          break;
+
+        case "close":
+          setVisible(false);
+          break;
+
+        case "setIdentifier":
+          setIdentity((prev) => ({
+            ...prev,
+            identifier: msg.identifier ?? prev.identifier,
+            unique_id:  msg.unique_id  ?? prev.unique_id,
+          }));
+          break;
+
+        case "error":
+          setServerError(msg.message ?? "Erreur inconnue");
+          break;
       }
     };
 
@@ -188,74 +182,44 @@ export default function Creator() {
     return () => window.removeEventListener("message", handler);
   }, []);
 
+  // ─── Ne rien rendre si le creator est fermé ───────────────────────────
+  if (!visible) return null;
+
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // HANDLERS DE MISE À JOUR + PREVIEW
+  // HANDLERS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  const updateIdentity = useCallback((key: keyof IdentityData, value: string) => {
+  const updateIdentity = (key: keyof IdentityData, value: string) => {
     setIdentity((prev) => {
       const updated = { ...prev, [key]: value };
-      // Le genre change le modèle : preview immédiat
-      if (key === "gender") {
-        sendPreview({ gender: value });
-      }
+      if (key === "gender") sendPreview({ gender: value });
       return updated;
     });
-    if (errors[key]) {
-      setErrors((e) => { const n = { ...e }; delete n[key]; return n; });
-    }
-  }, [errors, sendPreview]);
+    if (errors[key]) setErrors((e) => { const n = { ...e }; delete n[key]; return n; });
+  };
 
-  const updateHeadBlend = useCallback((data: HeadBlend) => {
-    setHeadBlend(data);
-    sendPreview({ headBlend: data });
-  }, [sendPreview]);
+  const updateHeadBlend    = (data: HeadBlend)          => { setHeadBlend(data);    sendPreview({ headBlend: data }); };
+  const updateFaceFeatures = (data: FaceFeaturesType)   => { setFaceFeatures(data); sendPreview({ faceFeatures: data }); };
+  const updateHeadOverlays = (data: HeadOverlaysType)   => { setHeadOverlays(data); sendPreview({ headOverlays: data }); };
+  const updateComponents   = (data: ClothingComponents) => { setComponents(data);   sendPreview({ components: data }); };
+  const updateProps        = (data: Props)               => { setProps(data);        sendPreview({ props: data }); };
+  const updateTattoos      = (data: Tattoo[])            => { setTattoos(data);      sendPreview({ tattoos: data }); };
 
-  const updateFaceFeatures = useCallback((data: FaceFeaturesType) => {
-    setFaceFeatures(data);
-    sendPreview({ faceFeatures: data });
-  }, [sendPreview]);
-
-  const updateHeadOverlays = useCallback((data: HeadOverlaysType) => {
-    setHeadOverlays(data);
-    sendPreview({ headOverlays: data });
-  }, [sendPreview]);
-
-  const updateHair = useCallback((patch: Partial<typeof hair>) => {
+  const updateHair = (patch: Partial<typeof hair>) => {
     setHair((prev) => {
       const updated = { ...prev, ...patch };
       sendPreview({ hair: updated });
       return updated;
     });
-  }, [sendPreview]);
+  };
 
-  const updateComponents = useCallback((data: ClothingComponents) => {
-    setComponents(data);
-    sendPreview({ components: data });
-  }, [sendPreview]);
-
-  const updateProps = useCallback((data: Props) => {
-    setProps(data);
-    sendPreview({ props: data });
-  }, [sendPreview]);
-
-  const updateTattoos = useCallback((data: Tattoo[]) => {
-    setTattoos(data);
-    sendPreview({ tattoos: data });
-  }, [sendPreview]);
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // SOUMISSION FINALE
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = async () => {
     const fieldErrors = validateIdentity(identity);
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
       setTab("identity");
       return;
     }
-
     setErrors({});
     const ok = await nuiFetch("createCharacter", buildPayload());
     if (ok) {
@@ -264,9 +228,8 @@ export default function Creator() {
     } else {
       setServerError("Erreur lors de la création du personnage");
     }
-  }, [identity, buildPayload, nuiFetch, setTab]);
+  };
 
-  // ─── Âge calculé ─────────────────────────────────────────────────────
   const getAge = () => {
     if (!identity.dateofbirth) return null;
     const age = new Date().getFullYear() - new Date(identity.dateofbirth).getFullYear();
@@ -284,35 +247,24 @@ export default function Creator() {
       {serverError && <div className={styles.error}>{serverError}</div>}
       {successMsg  && <div className={styles.success}>{successMsg}</div>}
 
-      {/* ─── IDENTITÉ ──────────────────────────────────────────────────── */}
       {tab === "identity" && (
         <>
           <Category title="État civil" icon="👤">
             <Field
-              label="Prénom"
-              type="text"
-              value={identity.firstname}
+              label="Prénom" type="text" value={identity.firstname}
               onChange={(v) => updateIdentity("firstname", v)}
-              placeholder="ex: Jean"
-              required
-              error={errors.firstname}
+              placeholder="ex: Jean" required error={errors.firstname}
             />
             <Field
-              label="Nom"
-              type="text"
-              value={identity.lastname}
+              label="Nom" type="text" value={identity.lastname}
               onChange={(v) => updateIdentity("lastname", v)}
-              placeholder="ex: Dupont"
-              required
-              error={errors.lastname}
+              placeholder="ex: Dupont" required error={errors.lastname}
             />
             <Field
               label={`Date de naissance${getAge() ? ` (${getAge()} ans)` : ""}`}
-              type="date"
-              value={identity.dateofbirth}
+              type="date" value={identity.dateofbirth}
               onChange={(v) => updateIdentity("dateofbirth", v)}
-              required
-              error={errors.dateofbirth}
+              required error={errors.dateofbirth}
             />
           </Category>
 
@@ -343,68 +295,51 @@ export default function Creator() {
         </>
       )}
 
-      {/* ─── PARENTS (Head Blend) ─────────────────────────────────────── */}
       {tab === "parents" && (
         <Category title="Mélange parental" icon="🧬">
           <Parents data={headBlend} onChange={updateHeadBlend} />
         </Category>
       )}
 
-      {/* ─── TRAITS DU VISAGE ─────────────────────────────────────────── */}
       {tab === "features" && (
         <Category title="Traits du visage" icon="◉">
           <FaceFeatures data={faceFeatures} onChange={updateFaceFeatures} />
         </Category>
       )}
 
-      {/* ─── OVERLAYS ─────────────────────────────────────────────────── */}
       {tab === "overlays" && (
         <Category title="Overlays" icon="🎨">
           <HeadOverlays data={headOverlays} onChange={updateHeadOverlays} />
         </Category>
       )}
 
-      {/* ─── CHEVEUX ──────────────────────────────────────────────────── */}
       {tab === "hair" && (
         <>
           <Category title="Coiffure" icon="✦">
-            <Slider
-              label="Style"
-              min={0} max={75}
-              value={hair.style}
-              onChange={(v) => updateHair({ style: v })}
-            />
+            <Slider label="Style" min={0} max={75} value={hair.style}
+              onChange={(v) => updateHair({ style: v })} />
           </Category>
           <Category title="Couleur principale" icon="🎨">
-            <ColorPicker
-              label="Couleur"
-              value={hair.color}
-              onChange={(v) => updateHair({ color: v })}
-            />
+            <ColorPicker label="Couleur" value={hair.color}
+              onChange={(v) => updateHair({ color: v })} />
           </Category>
           <Category title="Reflet / Highlight" icon="✨">
-            <ColorPicker
-              label="Reflet"
-              value={hair.highlight}
-              onChange={(v) => updateHair({ highlight: v })}
-            />
+            <ColorPicker label="Reflet" value={hair.highlight}
+              onChange={(v) => updateHair({ highlight: v })} />
           </Category>
         </>
       )}
 
-      {/* ─── TENUES ───────────────────────────────────────────────────── */}
       {tab === "clothing" && (
         <Category title="Vêtements & Accessoires" icon="👔">
           <Clothing
-            components={components}
-            props={props}
+            components={components} props={props}
             onChangeComponents={updateComponents}
             onChangeProps={updateProps}
           />
         </Category>
       )}
 
-      {/* ─── TATOUAGES ────────────────────────────────────────────────── */}
       {tab === "tattoos" && (
         <Category title="Tatouages" icon="💉">
           <Tattoos applied={tattoos} onChange={updateTattoos} />

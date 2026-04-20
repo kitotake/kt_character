@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "scssdev": "sass --watch src/style/global.scss src/index.css",
+    "scssbuild": "sass src/style/global.scss src/index.css --style=compressed",
     "lint": "eslint .",
     "preview": "vite preview"
   },
