@@ -1,4 +1,15 @@
 kt_character/
+│   └── server/
+│    ├── main.lua
+│    ├── config.lua
+│    ├── utils.lua
+│    ├── identifiers.lua
+│    ├── validator.lua
+│    ├── character_create.lua
+│    ├── character_load.lua
+│    ├── character_skin.lua
+│    ├── character_update.lua
+│    └── events.lua
 │
 ├── src/
 │   ├── components/

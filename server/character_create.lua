@@ -1,3 +1,5 @@
+-- server/character_create.lua
+
 RegisterNetEvent("kt_character:createCharacter", function(data)
     local src = source
 
