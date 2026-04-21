@@ -21,6 +21,10 @@ local CAM_PRESETS = {
     default = { dist = 1.00, z = 0.60, pointZ = 0.60 },
 }
 
+-- ─── Sauvegarder la native GTA AVANT toute redéfinition ──────────────
+-- (évite la récursion infinie si on avait besoin d'un alias)
+local _nativeDestroyCam = DestroyCam
+
 -- ─── Calcul position orbite ───────────────────────────────────────────
 local function orbitPosition(pedCoords, preset, angle, distMult)
     local rad = math.rad(angle)
@@ -53,7 +57,7 @@ local function applyCam(presetKey, angle, distMult, interp)
         SetCamActiveWithInterp(newCam, cam, 350, 1, 1)
         Wait(370)
 
-        DestroyCam(cam, false)
+        _nativeDestroyCam(cam, false)
         cam = newCam
     elseif cam then
         SetCamCoord(cam, cx, cy, cz)
@@ -185,7 +189,7 @@ function DestroyCharacterCam()
     if cam then
         RenderScriptCams(false, true, 800, true, true)
         Wait(820)
-        DestroyCam(cam, false)
+        _nativeDestroyCam(cam, false)  -- ✅ native GTA, pas de récursion
         cam = nil
     end
 
@@ -196,7 +200,3 @@ function DestroyCharacterCam()
     camAngle    = 0.0
     camDistance = 1.0
 end
-
--- Alias pour compatibilité avec main.lua qui appelle DestroyCam()
--- (évite collision avec la native GTA DestroyCam)
-DestroyCam = DestroyCharacterCam

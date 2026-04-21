@@ -1,5 +1,10 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Creator.tsx — Rendu pur, AUCUNE logique métier
+// Toute la logique est dans hooks/useCreator.ts
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 import styles from "./Creator.module.scss";
-import { useState, useCallback, useEffect } from "react";
+import { useCreator, STEPS } from "../hooks/useCreator";
 
 import Slider       from "../components/Slider/Slider";
 import Category     from "../components/Category/Category";
@@ -11,255 +16,33 @@ import HeadOverlays from "../components/HeadOverlays/HeadOverlays";
 import Clothing     from "../components/Clothing/Clothing";
 import Tattoos      from "../components/Tattoos/Tattoos";
 
-import {
-  DEFAULT_HEAD_BLEND,
-  DEFAULT_FACE_FEATURES,
-  DEFAULT_HEAD_OVERLAYS,
-  DEFAULT_COMPONENTS,
-  DEFAULT_PROPS,
-} from "../types/appearance.types";
-import type {
-  HeadBlend,
-  FaceFeatures as FaceFeaturesType,
-  HeadOverlays as HeadOverlaysType,
-  ClothingComponents,
-  Props,
-  Tattoo,
-} from "../types/appearance.types";
-
-const STEPS = [
-  { id: "identity", label: "Identité",   icon: "👤", tab: "identity" },
-  { id: "parents",  label: "Parents",    icon: "🧬", tab: "parents"  },
-  { id: "features", label: "Traits",     icon: "◉",  tab: "features" },
-  { id: "overlays", label: "Overlays",   icon: "🎨", tab: "overlays" },
-  { id: "hair",     label: "Cheveux",    icon: "✦",  tab: "hair"     },
-  { id: "clothing", label: "Tenue",      icon: "👔", tab: "clothing" },
-  { id: "tattoos",  label: "Tatouages",  icon: "💉", tab: "tattoos"  },
-];
-
-interface IdentityData {
-  identifier:  string;
-  unique_id:   string;
-  firstname:   string;
-  lastname:    string;
-  dateofbirth: string;
-  gender: "mp_m_freemode_01" | "mp_f_freemode_01";
-}
-
-function validateIdentity(identity: IdentityData): Record<string, string> {
-  const errors: Record<string, string> = {};
-  if (!identity.firstname.trim())         errors.firstname = "Le prénom est requis";
-  else if (identity.firstname.trim().length < 2) errors.firstname = "Minimum 2 caractères";
-  if (!identity.lastname.trim())          errors.lastname = "Le nom est requis";
-  else if (identity.lastname.trim().length < 2)  errors.lastname = "Minimum 2 caractères";
-  if (!identity.dateofbirth)              errors.dateofbirth = "La date de naissance est requise";
-  else {
-    const dob = new Date(identity.dateofbirth);
-    const age = new Date().getFullYear() - dob.getFullYear();
-    if (age < 18)  errors.dateofbirth = "Vous devez avoir au moins 18 ans";
-    if (age > 100) errors.dateofbirth = "Date invalide";
-  }
-  return errors;
-}
-
+// ─── Boutons caméra ───────────────────────────────────────────────────────
 const CAM_BUTTONS = [
-  { action: "rotateLeft",  icon: "↺", label: "Gauche",   title: "Tourner à gauche" },
-  { action: "rotateRight", icon: "↻", label: "Droite",   title: "Tourner à droite" },
-  { action: "zoomIn",      icon: "⊕", label: "Zoom +",   title: "Zoom avant"       },
-  { action: "zoomOut",     icon: "⊖", label: "Zoom -",   title: "Zoom arrière"     },
-  { action: "focusHead",   icon: "◯", label: "Tête",     title: "Focus visage"     },
-  { action: "focusBody",   icon: "▭", label: "Corps",    title: "Focus corps"      },
-  { action: "focusFull",   icon: "▬", label: "Entier",   title: "Vue entière"      },
-  { action: "resetCam",    icon: "⌖", label: "Reset",    title: "Réinitialiser"    },
+  { action: "rotateLeft",  icon: "↺", label: "Gauche",  title: "Tourner à gauche" },
+  { action: "rotateRight", icon: "↻", label: "Droite",  title: "Tourner à droite" },
+  { action: "zoomIn",      icon: "⊕", label: "Zoom +",  title: "Zoom avant"       },
+  { action: "zoomOut",     icon: "⊖", label: "Zoom -",  title: "Zoom arrière"     },
+  { action: "focusHead",   icon: "◯", label: "Tête",    title: "Focus visage"     },
+  { action: "focusBody",   icon: "▭", label: "Corps",   title: "Focus corps"      },
+  { action: "focusFull",   icon: "▬", label: "Entier",  title: "Vue entière"      },
+  { action: "resetCam",    icon: "⌖", label: "Reset",   title: "Réinitialiser"    },
 ];
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export default function Creator() {
-  const [visible,     setVisible]     = useState(false);
-  const [stepIndex,   setStepIndex]   = useState(0);
-  const [errors,      setErrors]      = useState<Record<string, string>>({});
-  const [serverError, setServerError] = useState("");
-  const [submitting,  setSubmitting]  = useState(false);
-
-  const [identity, setIdentity] = useState<IdentityData>({
-    identifier: "", unique_id: "", firstname: "", lastname: "",
-    dateofbirth: "", gender: "mp_m_freemode_01",
-  });
-
-  const [headBlend,    setHeadBlend]    = useState<HeadBlend>(DEFAULT_HEAD_BLEND);
-  const [faceFeatures, setFaceFeatures] = useState<FaceFeaturesType>(DEFAULT_FACE_FEATURES);
-  const [headOverlays, setHeadOverlays] = useState<HeadOverlaysType>(DEFAULT_HEAD_OVERLAYS);
-  const [hair,         setHair]         = useState({ style: 0, color: 0, highlight: 0 });
-  const [components,   setComponents]   = useState<ClothingComponents>(DEFAULT_COMPONENTS);
-  const [props,        setProps]        = useState<Props>(DEFAULT_PROPS);
-  const [tattoos,      setTattoos]      = useState<Tattoo[]>([]);
-
-  const currentStep = STEPS[stepIndex];
-
-  const getResourceName = useCallback((): string => {
-    if ((window as any).GetParentResourceName) return (window as any).GetParentResourceName();
-    return "kt_character";
-  }, []);
-
-  const nuiFetch = useCallback(async (endpoint: string, body: object): Promise<boolean> => {
-    try {
-      const res = await fetch(`https://${getResourceName()}/${endpoint}`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      return res.ok;
-    } catch { return false; }
-  }, [getResourceName]);
-
-  const buildPayload = useCallback(() => ({
-    ...identity, headBlend, faceFeatures, headOverlays, hair, components, props, tattoos,
-  }), [identity, headBlend, faceFeatures, headOverlays, hair, components, props, tattoos]);
-
-  const sendPreview = useCallback(async (payload: object) => {
-    setServerError("");
-    await nuiFetch("update", payload);
-  }, [nuiFetch]);
-
-  const goToStep = useCallback((index: number) => {
-    const step = STEPS[index];
-    if (!step) return;
-    setStepIndex(index);
-    nuiFetch("tabChange", { tab: step.tab });
-  }, [nuiFetch]);
-
-  const nextStep = () => {
-    if (stepIndex === 0) {
-      const fieldErrors = validateIdentity(identity);
-      if (Object.keys(fieldErrors).length > 0) { setErrors(fieldErrors); return; }
-      setErrors({});
-    }
-    if (stepIndex < STEPS.length - 1) goToStep(stepIndex + 1);
-  };
-
-  const prevStep = () => {
-    if (stepIndex > 0) goToStep(stepIndex - 1);
-  };
-
-  const camControl = useCallback((action: string) => {
-    nuiFetch("cameraControl", { action });
-  }, [nuiFetch]);
-
-  const handleClose = useCallback(async () => {
-    if (submitting) return;
-    setServerError("");
-    setSubmitting(false);
-    await nuiFetch("close", {});
-    setVisible(false);
-  }, [nuiFetch, submitting]);
-
-  // ─── Messages NUI entrants ────────────────────────────────────────────
-  useEffect(() => {
-    const handler = (event: MessageEvent) => {
-      const msg = event.data;
-      if (!msg?.type) return;
-      switch (msg.type) {
-        case "open":
-          setVisible(true);
-          setStepIndex(0);
-          setErrors({});
-          setServerError("");
-          setSubmitting(false);
-          break;
-        case "close":
-          setVisible(false);
-          setSubmitting(false);
-          setServerError("");
-          setErrors({});
-          break;
-        case "setIdentifier":
-          setIdentity((p) => ({
-            ...p,
-            identifier: msg.identifier ?? p.identifier,
-            unique_id:  msg.unique_id  ?? p.unique_id,
-          }));
-          break;
-        case "error":
-          setServerError(msg.message ?? "Erreur inconnue");
-          setSubmitting(false);
-          break;
-      }
-    };
-    window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
-  }, []);
-
-  useEffect(() => {
-    if (!visible) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      event.preventDefault();
-      void handleClose();
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [visible, handleClose]);
+  const {
+    visible, stepIndex, errors, serverError, submitting, isLastStep, currentStep,
+    identity, headBlend, faceFeatures, headOverlays, hair, components, props, tattoos,
+    closeUI, goToStep, nextStep, prevStep, handleSubmit, camControl, getAge,
+    updateIdentity, updateHeadBlend, updateFaceFeatures, updateHeadOverlays,
+    updateHair, updateComponents, updateProps, updateTattoos,
+  } = useCreator();
 
   if (!visible) return null;
 
-  // ─── Handlers ─────────────────────────────────────────────────────────
-  const updateIdentity = (key: keyof IdentityData, value: string) => {
-    setIdentity((prev) => {
-      const updated = { ...prev, [key]: value };
-      if (key === "gender") sendPreview({ gender: value });
-      return updated;
-    });
-    if (errors[key]) setErrors((e) => { const n = { ...e }; delete n[key]; return n; });
-  };
-
-  const updateHeadBlend    = (d: HeadBlend)          => { setHeadBlend(d);    sendPreview({ headBlend: d }); };
-  const updateFaceFeatures = (d: FaceFeaturesType)   => { setFaceFeatures(d); sendPreview({ faceFeatures: d }); };
-  const updateHeadOverlays = (d: HeadOverlaysType)   => { setHeadOverlays(d); sendPreview({ headOverlays: d }); };
-  const updateComponents   = (d: ClothingComponents) => { setComponents(d);   sendPreview({ components: d }); };
-  const updatePropsData    = (d: Props)               => { setProps(d);        sendPreview({ props: d }); };
-  const updateTattoos      = (d: Tattoo[])            => { setTattoos(d);      sendPreview({ tattoos: d }); };
-
-  const updateHair = (patch: Partial<typeof hair>) => {
-    setHair((prev) => {
-      const updated = { ...prev, ...patch };
-      sendPreview({ hair: updated });
-      return updated;
-    });
-  };
-
-  // FIX : fermer l'UI immédiatement via nuiFetch("close")
-  // Ne pas attendre kt_character:created (peut ne jamais arriver si DB échoue)
-  const handleSubmit = async () => {
-    const fieldErrors = validateIdentity(identity);
-    if (Object.keys(fieldErrors).length > 0) {
-      setErrors(fieldErrors); goToStep(0); return;
-    }
-    setErrors({});
-    setSubmitting(true);
-
-    // Envoyer la création au serveur
-    const created = await nuiFetch("createCharacter", buildPayload());
-    if (!created) {
-      setServerError("La creation du personnage a echoue.");
-      setSubmitting(false);
-      return;
-    }
-
-    // Fermer l'UI côté Lua via le callback "close" (unfreeze + caméra)
-    await handleClose();
-  };
-
-  const getAge = () => {
-    if (!identity.dateofbirth) return null;
-    const age = new Date().getFullYear() - new Date(identity.dateofbirth).getFullYear();
-    return isNaN(age) ? null : age;
-  };
-
-  const isLastStep = stepIndex === STEPS.length - 1;
-
   return (
     <>
-      {/* Boutons caméra */}
+      {/* ── Panneau caméra ─────────────────────────────────────────────── */}
       <div className={styles.camPanel}>
         <span className={styles.camTitle}>CAMÉRA</span>
         {CAM_BUTTONS.map((btn) => (
@@ -275,7 +58,7 @@ export default function Creator() {
         ))}
       </div>
 
-      {/* Panneau principal */}
+      {/* ── Panneau principal ───────────────────────────────────────────── */}
       <div className={styles.container}>
 
         {/* Step progress bar */}
@@ -283,7 +66,11 @@ export default function Creator() {
           {STEPS.map((s, i) => (
             <button
               key={s.id}
-              className={`${styles.stepDot} ${i === stepIndex ? styles.stepActive : ""} ${i < stepIndex ? styles.stepDone : ""}`}
+              className={[
+                styles.stepDot,
+                i === stepIndex ? styles.stepActive : "",
+                i < stepIndex  ? styles.stepDone   : "",
+              ].join(" ")}
               onClick={() => i < stepIndex && goToStep(i)}
               title={s.label}
             >
@@ -306,7 +93,7 @@ export default function Creator() {
           <button
             type="button"
             className={styles.closeBtn}
-            onClick={() => void handleClose()}
+            onClick={() => void closeUI()}
             disabled={submitting}
             title="Fermer"
           >
@@ -317,7 +104,7 @@ export default function Creator() {
         {/* Messages */}
         {serverError && <div className={styles.error}>{serverError}</div>}
 
-        {/* Step content */}
+        {/* ── Contenu de l'étape ──────────────────────────────────────── */}
         <div className={styles.stepContent}>
 
           {currentStep.id === "identity" && (
@@ -344,7 +131,7 @@ export default function Creator() {
               <Category title="Genre" icon="⚧">
                 <div className={styles.genderRow}>
                   <button
-                    className={`${styles.genderBtn} ${identity.gender === "mp_m_freemode_01" ? styles.genderActive : ""}`}
+                    className={[styles.genderBtn, identity.gender === "mp_m_freemode_01" ? styles.genderActive : ""].join(" ")}
                     onClick={() => updateIdentity("gender", "mp_m_freemode_01")}
                   >
                     <span className={styles.genderIcon}>♂</span>
@@ -352,7 +139,7 @@ export default function Creator() {
                     <span className={styles.genderSub}>mp_m</span>
                   </button>
                   <button
-                    className={`${styles.genderBtn} ${identity.gender === "mp_f_freemode_01" ? styles.genderActive : ""}`}
+                    className={[styles.genderBtn, identity.gender === "mp_f_freemode_01" ? styles.genderActive : ""].join(" ")}
                     onClick={() => updateIdentity("gender", "mp_f_freemode_01")}
                   >
                     <span className={styles.genderIcon}>♀</span>
@@ -404,7 +191,7 @@ export default function Creator() {
               <Clothing
                 components={components} props={props}
                 onChangeComponents={updateComponents}
-                onChangeProps={updatePropsData}
+                onChangeProps={updateProps}
               />
             </Category>
           )}
@@ -414,9 +201,10 @@ export default function Creator() {
               <Tattoos applied={tattoos} onChange={updateTattoos} />
             </Category>
           )}
+
         </div>
 
-        {/* Navigation */}
+        {/* ── Navigation ──────────────────────────────────────────────── */}
         <div className={styles.navRow}>
           <button
             className={styles.navBtn}

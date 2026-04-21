@@ -178,9 +178,13 @@ RegisterNetEvent("kt_character:created", function(character)
 end)
 
 RegisterNetEvent("kt_character:closeUI", function()
+    print("closeUI reçu, tentative de fermeture")
     closeCreator()
+    print("closeUI reçu, UI fermé")
     SendNUIMessage({ type = "close" })
+    print("closeUI traité, message envoyé")
     debugLog("closeUI reçu", "INFO")
+    print("closeUI traité")
 end)
 
 RegisterNetEvent("kt_character:skinEditData", function(skinData)

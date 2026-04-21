@@ -51,3 +51,34 @@ RegisterNetEvent("kt_character:reloadSkin", function(unique_id)
         end
     )
 end)
+
+-- kt_character/server/character_skin.lua
+-- ✅ AJOUT : handler manquant pour kt_character:requestSkinEdit
+
+RegisterNetEvent("kt_character:requestSkinEdit", function(unique_id)
+    local src = source
+    if not unique_id then return end
+
+    exports.oxmysql:execute(
+        [[SELECT c.gender, ca.skin_data
+          FROM characters c
+          LEFT JOIN character_appearances ca ON ca.unique_id = c.unique_id
+          WHERE c.unique_id = ? LIMIT 1]],
+        { unique_id },
+        function(result)
+            if not result or #result == 0 then return end
+            local row = result[1]
+            local skinData = {}
+            if row.skin_data then
+                skinData = json.decode(row.skin_data) or {}
+            end
+            -- Convertir l'enum genre en model string GTA V
+            if row.gender == "f" then
+                skinData.gender = "mp_f_freemode_01"
+            else
+                skinData.gender = "mp_m_freemode_01"
+            end
+            TriggerClientEvent("kt_character:skinEditData", src, skinData)
+        end
+    )
+end)
