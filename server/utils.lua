@@ -1,3 +1,7 @@
+-- server/utils.lua (kt_character)
+-- FIX: genderEnumToModel("m") retournait "m" → doit retourner "mp_m_freemode_01"
+-- FIX: suppression UPDATE last_login (ping inutile)
+
 Utils = {}
 
 function Utils.debug(message, level)
@@ -15,7 +19,10 @@ function Utils.modelToGenderEnum(model)
     return "m"
 end
 
+-- FIX: retourne toujours un model GTA V valide, jamais "m" ou "f" seul
 function Utils.genderEnumToModel(enum)
-    if enum == "f" then return "mp_f_freemode_01" end
+    if enum == "f" or enum == "mp_f_freemode_01" then
+        return "mp_f_freemode_01"
+    end
     return "mp_m_freemode_01"
 end

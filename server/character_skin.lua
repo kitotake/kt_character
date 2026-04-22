@@ -1,3 +1,8 @@
+-- server/character_skin.lua
+-- FIXES:
+--   - genderEnumToModel("m") retournait "m" → maintenant "mp_m_freemode_01"
+--   - reloadSkin transmettait le skin mais pas les tattoos
+
 RegisterNetEvent("kt_character:reloadSkin", function(unique_id)
     local src = source
 
@@ -23,10 +28,13 @@ RegisterNetEvent("kt_character:reloadSkin", function(unique_id)
 
             local row = results[1]
 
+            -- FIX: Utils.genderEnumToModel("m") → "mp_m_freemode_01"
+            local genderModel = Utils.genderEnumToModel(row.gender)
+
             local appearance = {
                 unique_id = unique_id,
-                gender = Utils.genderEnumToModel(row.gender),
-                model  = Utils.genderEnumToModel(row.gender),
+                gender    = genderModel,
+                model     = genderModel,
                 position = vector3(
                     row.position_x or Config.DEFAULT_SPAWN.x,
                     row.position_y or Config.DEFAULT_SPAWN.y,
@@ -44,6 +52,7 @@ RegisterNetEvent("kt_character:reloadSkin", function(unique_id)
                     appearance.headOverlays = skin.headOverlays
                     appearance.components   = skin.components
                     appearance.props        = skin.props
+                    appearance.tattoos      = skin.tattoos  -- FIX: était absent
                 end
             end
 
@@ -52,9 +61,7 @@ RegisterNetEvent("kt_character:reloadSkin", function(unique_id)
     )
 end)
 
--- kt_character/server/character_skin.lua
--- ✅ AJOUT : handler manquant pour kt_character:requestSkinEdit
-
+-- ✅ handler pour kt_character:requestSkinEdit
 RegisterNetEvent("kt_character:requestSkinEdit", function(unique_id)
     local src = source
     if not unique_id then return end
@@ -72,12 +79,8 @@ RegisterNetEvent("kt_character:requestSkinEdit", function(unique_id)
             if row.skin_data then
                 skinData = json.decode(row.skin_data) or {}
             end
-            -- Convertir l'enum genre en model string GTA V
-            if row.gender == "f" then
-                skinData.gender = "mp_f_freemode_01"
-            else
-                skinData.gender = "mp_m_freemode_01"
-            end
+            -- FIX: utilise Utils.genderEnumToModel pour cohérence
+            skinData.gender = Utils.genderEnumToModel(row.gender)
             TriggerClientEvent("kt_character:skinEditData", src, skinData)
         end
     )
