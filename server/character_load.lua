@@ -1,3 +1,19 @@
+-- server/character_load.lua (kt_character)
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-- FIX: lit la colonne `position` JSON au lieu de position_x/y/z
+-- FIX: genderEnumToModel retourne le bon modèle GTA V
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+local function decodePosition(raw)
+    if raw then
+        local ok, p = pcall(json.decode, tostring(raw))
+        if ok and p and p.x then
+            return p.x, p.y, p.z, p.heading
+        end
+    end
+    return nil, nil, nil, nil
+end
+
 RegisterNetEvent("kt_character:loadCharacter", function(unique_id)
     local src = source
 
@@ -20,17 +36,27 @@ RegisterNetEvent("kt_character:loadCharacter", function(unique_id)
 
             local row = result[1]
 
+            -- FIX: retourne toujours un model GTA V valide
             row.gender = Utils.genderEnumToModel(row.gender)
             row.model  = row.gender
 
-            row.position = vector3(
-                row.position_x or Config.DEFAULT_SPAWN.x,
-                row.position_y or Config.DEFAULT_SPAWN.y,
-                row.position_z or Config.DEFAULT_SPAWN.z
-            )
+            -- FIX: lire position depuis colonne JSON en priorité
+            local px, py, pz, hdg = decodePosition(row.position)
 
-            row.heading = row.heading or Config.DEFAULT_HEADING
+            if px then
+                row.position = vector3(px, py, pz)
+                row.heading  = hdg or row.heading or Config.DEFAULT_HEADING
+            else
+                -- Fallback : anciennes colonnes séparées (avant migration)
+                row.position = vector3(
+                    row.position_x or Config.DEFAULT_SPAWN.x,
+                    row.position_y or Config.DEFAULT_SPAWN.y,
+                    row.position_z or Config.DEFAULT_SPAWN.z
+                )
+                row.heading = row.heading or Config.DEFAULT_HEADING
+            end
 
+            -- Charger le skin
             if row.skin_data then
                 local skin = json.decode(row.skin_data)
                 if skin then
