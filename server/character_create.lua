@@ -14,7 +14,7 @@ RegisterNetEvent("kt_character:createCharacter", function(data)
 
     local unique_id = data.unique_id
     if not unique_id or unique_id == "" then
-        unique_id = "chr_" .. exports['union']:generateUniqueId()
+       unique_id = exports['union']:generateUniqueId()
     end
 
     local character = {
