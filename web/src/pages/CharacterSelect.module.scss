@@ -1,0 +1,356 @@
+// web/src/pages/CharacterSelect.module.scss
+
+@use "../style/variables.scss" as *;
+@use "../style/mixins.scss" as *;
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── OVERLAY ────────────────────────────────────────────────────────────────
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // Pas de backdrop-filter (FiveM)
+  animation: fadeIn 0.3s ease;
+  z-index: 500;
+}
+
+// ── PANEL ──────────────────────────────────────────────────────────────────
+.panel {
+  width: 580px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 80px);
+  background: $panel;
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  border-radius: $radius-md;
+  @include flex-col(0);
+  overflow: hidden;
+  animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+}
+
+// ── HEADER ─────────────────────────────────────────────────────────────────
+.header {
+  @include flex-between;
+  align-items: center;
+  padding: $spacing-lg $spacing-lg $spacing-md;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.headerLeft {
+  @include flex-col(4px);
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $text;
+  margin: 0;
+}
+
+.slots {
+  font-size: $font-size-xs;
+  color: $muted;
+  font-family: $font-family-mono;
+  letter-spacing: 0.08em;
+}
+
+.slotDots {
+  @include flex-row(6px);
+  align-items: center;
+}
+
+.slotDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transition: $transition;
+
+  &Filled {
+    background: $accent;
+    box-shadow: 0 0 6px rgba(0, 217, 255, 0.4);
+  }
+
+  &Empty {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+}
+
+// ── GRID ──────────────────────────────────────────────────────────────────
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, 0.3);
+    border-radius: 2px;
+  }
+}
+
+// ── CHARACTER CARD ─────────────────────────────────────────────────────────
+.card {
+  @include flex-row($spacing-sm);
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid rgba(0, 217, 255, 0.1);
+  border-radius: $radius-sm;
+  padding: $spacing-md;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  transition: $transition;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.06);
+    border-color: rgba(0, 217, 255, 0.3);
+  }
+
+  &Selected {
+    background: rgba(0, 217, 255, 0.1) !important;
+    border-color: $accent !important;
+    box-shadow: 0 0 0 1px rgba(0, 217, 255, 0.2) !important;
+  }
+}
+
+.cardAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 217, 255, 0.08);
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatarEmoji {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.cardBody {
+  @include flex-col(4px);
+  flex: 1;
+  min-width: 0;
+}
+
+.cardName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardMeta {
+  @include flex-row(6px);
+  align-items: center;
+  font-size: $font-size-xs;
+  color: $muted;
+}
+
+.genderIcon {
+  font-size: 13px;
+  color: $accent;
+}
+
+.dob {
+  font-family: $font-family-mono;
+  font-size: 10px;
+  color: $text-tertiary;
+}
+
+.cardJob {
+  @include flex-row(6px);
+  align-items: center;
+  margin-top: 2px;
+}
+
+.jobLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $text-secondary;
+  text-transform: capitalize;
+  background: rgba(0, 217, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: $radius-xs;
+}
+
+.jobGrade {
+  font-size: $font-size-xs;
+  color: $muted;
+  font-family: $font-family-mono;
+}
+
+.cardStats {
+  @include flex-col(4px);
+  margin-top: 4px;
+}
+
+.statRow {
+  @include flex-row(6px);
+  align-items: center;
+}
+
+.statLabel {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: $muted;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.healthBar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.healthFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.statValue {
+  font-size: 10px;
+  font-family: $font-family-mono;
+  color: $muted;
+  min-width: 32px;
+  text-align: right;
+}
+
+.selectedBadge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: $accent;
+  color: #000;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ── EMPTY SLOT ─────────────────────────────────────────────────────────────
+.emptySlot {
+  @include flex-col(8px);
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1.5px dashed rgba(255, 255, 255, 0.08);
+  border-radius: $radius-sm;
+  padding: $spacing-lg;
+  min-height: 120px;
+  cursor: default;
+}
+
+.emptyIcon {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.12);
+  line-height: 1;
+}
+
+.emptyLabel {
+  font-size: $font-size-xs;
+  color: $text-tertiary;
+  text-align: center;
+}
+
+// ── ERROR ──────────────────────────────────────────────────────────────────
+.error {
+  margin: 0 $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background: rgba($error, 0.1);
+  border: 1px solid rgba($error, 0.3);
+  border-radius: $radius-xs;
+  font-size: $font-size-sm;
+  color: #ff6b6b;
+  font-weight: $font-weight-semibold;
+  flex-shrink: 0;
+}
+
+// ── FOOTER ─────────────────────────────────────────────────────────────────
+.footer {
+  @include flex-between;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-top: 1px solid rgba(0, 217, 255, 0.08);
+  flex-shrink: 0;
+  gap: $spacing-md;
+}
+
+.selectedInfo {
+  font-size: $font-size-sm;
+  color: $muted;
+  flex: 1;
+
+  strong {
+    color: $text;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.hintText {
+  font-style: italic;
+  color: $text-tertiary;
+}
+
+.playBtn {
+  background: linear-gradient(135deg, $accent, $accent-light) !important;
+  border: none !important;
+  border-radius: $radius-sm !important;
+  color: #000 !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-bold !important;
+  padding: $spacing-sm $spacing-xl !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  transform: none !important;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.3) !important;
+  transition: $transition !important;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(0, 217, 255, 0.4) !important;
+  }
+
+  &:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
