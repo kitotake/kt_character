@@ -87,7 +87,7 @@ html {
 }
 
 body {
-   /* background: #0f0f15;*/
+    background: rgba(0, 0, 0, 0);
     color: #f8f8ff;
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-size: 13px;
@@ -358,20 +358,6 @@ input[type=range]::-moz-range-thumb:hover {
     background: rgba(0, 217, 255, .5)
 }
 
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 50%
-    }
-
-    50% {
-        background-position: 100% 50%
-    }
-
-    100% {
-        background-position: 0% 50%
-    }
-}
-
 .container {
     width: 100%;
     max-width: 1440px;
@@ -420,6 +406,7 @@ input[type=range]::-moz-range-thumb:hover {
 #root {
     width: 100%;
     min-height: 100vh;
+    background: rgba(0, 0, 0, 0);
     display: flex;
     flex-direction: column
 }

@@ -59,15 +59,6 @@ export default function App() {
     return () => window.removeEventListener("message", handler);
   }, []);
 
-/*  // ── Handler sélection ─────────────────────────────────────────────────
-  const handleSelect = (charId: number) => {
-    // Le fetch NUI est fait dans CharacterSelect.tsx
-    // On ferme uniquement quand le serveur répond via characters:doSpawn
-    // → le client Lua fermera la NUI lui-même
-    // Ici on peut mettre un état "loading" si besoin
-    console.log("[App] selectCharacter", charId);
-  };*/
-
   return (
     <>
       {/* Creator de personnage (kt_character) */}
