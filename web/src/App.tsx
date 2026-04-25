@@ -1,5 +1,7 @@
 // web/src/App.tsx
-// Intègre CharacterSelect dans le flux NUI en plus du Creator existant
+// Gère les deux protocoles NUI :
+//   - type="..." pour le Creator (kt_character)
+//   - action="..." pour CharacterSelect (union/kt_character)
 
 import { useState, useEffect } from "react";
 import Creator from "./pages/Creator";
@@ -21,36 +23,34 @@ interface Character {
 }
 
 export default function App() {
-  // ── État sélection ────────────────────────────────────────────────────
   const [selectVisible, setSelectVisible] = useState(false);
   const [selectChars, setSelectChars]     = useState<Character[]>([]);
-  const [selectSlots, setSelectSlots]     = useState(1);
+  const [selectSlots, setSelectSlots]     = useState(3);
 
-  // ── NUI message handler ───────────────────────────────────────────────
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       const msg = event.data;
-      if (!msg?.action) return;
+      if (!msg) return;
 
-      switch (msg.action) {
-        // Ouverture sélection personnage
+      // FIX: le client Lua envoie action= pour la sélection
+      // et type= pour le creator — on gère les deux
+      const key = msg.action ?? msg.type;
+
+      switch (key) {
         case "openCharacterSelection":
           setSelectChars(msg.characters || []);
-          setSelectSlots(msg.slots || 1);
+          setSelectSlots(msg.slots || 3);
           setSelectVisible(true);
           break;
 
-        // Fermeture (après doSpawn ou erreur critique)
+        // Fermeture globale (après spawn ou erreur)
         case "close":
           setSelectVisible(false);
           break;
 
-        // Erreur à afficher dans la sélection
-        case "showError":
-          // Géré dans CharacterSelect via message Notifications
-          break;
-
         default:
+          // Les autres messages (open, setIdentifier, error, etc.)
+          // sont gérés directement par Creator via useCreator.ts
           break;
       }
     };
@@ -61,7 +61,7 @@ export default function App() {
 
   return (
     <>
-      {/* Creator de personnage (kt_character) */}
+      {/* Creator de personnage */}
       <Creator />
 
       {/* Sélection de personnage */}
@@ -69,7 +69,6 @@ export default function App() {
         visible={selectVisible}
         characters={selectChars}
         slots={selectSlots}
-        
       />
     </>
   );

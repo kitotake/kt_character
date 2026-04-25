@@ -30,6 +30,7 @@ server_scripts {
     'server/character_load.lua',
     'server/character_skin.lua',
     'server/character_update.lua',
+    'server/outfits.lua',
     'server/events.lua',
 
     -- Main (toujours en dernier)

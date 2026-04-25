@@ -1,8 +1,4 @@
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // web/src/pages/CharacterSelect.tsx
-// NUI de sélection de personnage — reçoit "openCharacterSelection"
-// Envoie "selectCharacter" via NUI callback
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 import { useState, useEffect, useCallback } from "react";
 import styles from "./CharacterSelect.module.scss";
@@ -127,8 +123,8 @@ export default function CharacterSelect({
   slots,
 }: CharacterSelectProps) {
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [loading, setLoading]       = useState(false);
+  const [error, setError]           = useState("");
 
   useEffect(() => {
     if (!visible) {
@@ -138,6 +134,8 @@ export default function CharacterSelect({
     }
   }, [visible]);
 
+  // FIX: utilise le NUI callback "selectCharacter" déclaré dans client/main.lua
+  // au lieu d'un fetch direct vers "selectCharacter" (qui n'est pas enregistré)
   const handlePlay = useCallback(async () => {
     if (selectedId === null) {
       setError("Veuillez sélectionner un personnage.");
@@ -149,8 +147,10 @@ export default function CharacterSelect({
 
     try {
       const resourceName =
-        (window as any).GetParentResourceName?.() ?? "union";
+        (window as any).GetParentResourceName?.() ?? "kt_character";
 
+      // FIX: endpoint = "selectCharacter" → correspond au RegisterNUICallback
+      // dans client/main.lua qui relaie vers kt_character:selectCharacter
       const res = await fetch(`https://${resourceName}/selectCharacter`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -160,8 +160,11 @@ export default function CharacterSelect({
       if (!res.ok) {
         setError("Erreur lors de la sélection.");
         setLoading(false);
+        return;
       }
-      // La NUI sera fermée par le serveur via characters:doSpawn
+
+      // La NUI sera fermée par le serveur via union:spawn:apply
+      // qui envoie action="close" au client
     } catch {
       setError("Connexion perdue.");
       setLoading(false);
@@ -170,7 +173,7 @@ export default function CharacterSelect({
 
   if (!visible) return null;
 
-  const usedSlots = characters.length;
+  const usedSlots  = characters.length;
   const totalSlots = slots;
 
   return (
@@ -185,7 +188,6 @@ export default function CharacterSelect({
             </span>
           </div>
 
-          {/* Slot dots */}
           <div className={styles.slotDots}>
             {Array.from({ length: totalSlots }, (_, i) => (
               <div
@@ -211,7 +213,6 @@ export default function CharacterSelect({
             />
           ))}
 
-          {/* Empty slots */}
           {Array.from({ length: Math.max(0, totalSlots - usedSlots) }, (_, i) => (
             <div key={`empty-${i}`} className={styles.emptySlot}>
               <span className={styles.emptyIcon}>+</span>
@@ -220,7 +221,6 @@ export default function CharacterSelect({
           ))}
         </div>
 
-        {/* Error */}
         {error && <div className={styles.error}>{error}</div>}
 
         {/* Footer */}
