@@ -36,3 +36,7 @@ server_scripts {
     -- Main (toujours en dernier)
     'server/main.lua'
 }
+
+client_exports {
+    "ApplyFullAppearance"
+}

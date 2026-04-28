@@ -275,6 +275,8 @@ function ApplyFullAppearance(data)
     debugLog("Apparence appliquée avec succès", "INFO")
 end
 
+exports("ApplyFullAppearance", ApplyFullAppearance)
+
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- APPLY OUTFIT ONLY (vêtements + props)
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
