@@ -21,21 +21,33 @@ local function loadModel(model)
     return HasModelLoaded(model)
 end
 
+-- ─── Normalise le genre vers un modèle GTA V valide ─────────────────────
+-- FIX: "m" / "f" (BDD) → "mp_m_freemode_01" / "mp_f_freemode_01"
+local function normalizeGenderModel(gender)
+    if gender == "f" or gender == "mp_f_freemode_01" then
+        return "mp_f_freemode_01"
+    end
+    return "mp_m_freemode_01"
+end
+
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- APPLY GENDER MODEL
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 local function applyGender(gender)
-    local model = GetHashKey(gender or "mp_m_freemode_01")
+    local modelName = normalizeGenderModel(gender)
+    local model     = GetHashKey(modelName)
+
+    -- Déjà le bon modèle → gain de temps (pas de rechargement)
     if GetEntityModel(PlayerPedId()) == model then
-        return PlayerPedId() -- déjà bon modèle
+        return PlayerPedId()
     end
 
     if loadModel(model) then
         SetPlayerModel(PlayerId(), model)
         SetModelAsNoLongerNeeded(model)
-        debugLog("Modèle appliqué: " .. tostring(gender), "INFO")
+        debugLog("Modèle appliqué: " .. modelName, "INFO")
     else
-        debugLog("Impossible de charger le modèle: " .. tostring(gender), "ERROR")
+        debugLog("Impossible de charger le modèle: " .. modelName, "ERROR")
     end
 
     return PlayerPedId()
@@ -70,9 +82,8 @@ end
 local function applyFaceFeatures(ped, faceFeatures)
     if not faceFeatures then return end
     for i = 0, 19 do
-        local val = faceFeatures[i + 1] -- Lua est 1-indexé, le tableau React aussi
+        local val = faceFeatures[i + 1] -- Lua est 1-indexé
         if val ~= nil then
-            -- Clamp -1.0 → 1.0
             val = math.max(-1.0, math.min(1.0, val))
             SetPedFaceFeature(ped, i, val)
         end
@@ -85,7 +96,7 @@ end
 -- SetPedHeadOverlayColor(ped, overlayId, colorType, firstColor, secondColor)
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
--- colorType par overlay (depuis appearance.types.ts)
+-- colorType par overlay
 local OVERLAY_COLOR_TYPES = {
     [0]  = 0, -- Imperfections    → aucune couleur
     [1]  = 1, -- Barbe            → cheveux
@@ -106,8 +117,7 @@ local function applyHeadOverlays(ped, headOverlays)
     if not headOverlays then return end
 
     for overlayId = 0, 12 do
-        -- Le JSON encode les clés numériques comme strings en Lua
-        local key = tostring(overlayId)
+        local key     = tostring(overlayId)
         local overlay = headOverlays[key] or headOverlays[overlayId]
 
         if overlay then
@@ -116,16 +126,13 @@ local function applyHeadOverlays(ped, headOverlays)
             local firstColor = overlay.firstColor or 0
             local secColor   = overlay.secondColor or 0
 
-            -- Appliquer l'overlay
             SetPedHeadOverlay(ped, overlayId, index, opacity)
 
-            -- Appliquer la couleur si l'overlay en a une
             local colorType = OVERLAY_COLOR_TYPES[overlayId] or 0
             if colorType > 0 and index > 0 then
                 SetPedHeadOverlayColor(ped, overlayId, colorType, firstColor, secColor)
             end
         else
-            -- Reset l'overlay si absent
             SetPedHeadOverlay(ped, overlayId, 255, 1.0)
         end
     end
@@ -202,10 +209,9 @@ end
 -- AddPedDecorationFromHashes(ped, GetHashKey(collection), GetHashKey(overlay))
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 local function applyTattoos(ped, tattoos)
-    -- Toujours effacer d'abord pour éviter les doublons
     ClearPedDecorations(ped)
 
-    if not tattoos then return end
+    if not tattoos or #tattoos == 0 then return end
 
     for _, tattoo in ipairs(tattoos) do
         if tattoo.collection and tattoo.overlay then
@@ -221,6 +227,7 @@ end
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- FONCTION PRINCIPALE : applyFullAppearance
 -- Reçoit un objet FullAppearance et applique tout
+-- OPTIMISÉ : Wait(100) seulement si le modèle a vraiment changé
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ApplyFullAppearance(data)
     if not data then
@@ -230,16 +237,23 @@ function ApplyFullAppearance(data)
 
     debugLog("Application apparence complète...", "INFO")
 
-    -- 1. Modèle
+    -- 1. Modèle / Genre
+    --    FIX: normalizeGenderModel gère "m", "f", et les noms complets
+    local modelName    = normalizeGenderModel(data.gender)
+    local model        = GetHashKey(modelName)
+    local modelChanged = GetEntityModel(PlayerPedId()) ~= model
+
     local ped = applyGender(data.gender)
     if not ped or ped == 0 then
         debugLog("PED invalide après changement modèle", "ERROR")
         return
     end
 
-    -- Petite attente pour que le modèle soit pleinement initialisé
-    Wait(100)
-    ped = PlayerPedId()
+    -- Attendre uniquement si le modèle a changé (gain de temps si déjà bon)
+    if modelChanged then
+        Wait(100)
+        ped = PlayerPedId()
+    end
 
     -- 2. Head Blend (doit être appliqué AVANT les face features)
     applyHeadBlend(ped, data.headBlend)
@@ -250,12 +264,10 @@ function ApplyFullAppearance(data)
     -- 4. Head Overlays (inclut la barbe)
     applyHeadOverlays(ped, data.headOverlays)
 
-    -- 5. Cheveux
-    -- Support des deux formats : { hair, hairColor } ou { style, color, highlight }
+    -- 5. Cheveux (deux formats supportés)
     if data.hair and type(data.hair) == "table" then
         applyHair(ped, data.hair)
     elseif data.hair ~= nil then
-        -- Format legacy : hair est un nombre
         applyHair(ped, {
             style     = data.hair,
             color     = data.hairColor or 0,
@@ -288,11 +300,12 @@ function ApplyOutfit(data)
     debugLog("Tenue appliquée", "INFO")
 end
 
+exports("ApplyOutfit", ApplyOutfit)
+
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 -- EVENTS
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
--- Applique l'apparence complète (chargement perso / reloadskin)
 RegisterNetEvent("kt_appearance:apply", function(data)
     debugLog("Event kt_appearance:apply reçu", "INFO")
     Citizen.CreateThread(function()
@@ -324,7 +337,8 @@ function ApplyPreview(data)
 
     -- Genre (change le modèle si nécessaire)
     if data.gender then
-        local model = GetHashKey(data.gender)
+        local modelName = normalizeGenderModel(data.gender)
+        local model     = GetHashKey(modelName)
         if GetEntityModel(ped) ~= model then
             ped = applyGender(data.gender)
             Wait(100)
@@ -332,22 +346,10 @@ function ApplyPreview(data)
         end
     end
 
-    -- HeadBlend
-    if data.headBlend then
-        applyHeadBlend(ped, data.headBlend)
-    end
+    if data.headBlend    then applyHeadBlend(ped, data.headBlend)       end
+    if data.faceFeatures then applyFaceFeatures(ped, data.faceFeatures) end
+    if data.headOverlays then applyHeadOverlays(ped, data.headOverlays) end
 
-    -- FaceFeatures
-    if data.faceFeatures then
-        applyFaceFeatures(ped, data.faceFeatures)
-    end
-
-    -- HeadOverlays
-    if data.headOverlays then
-        applyHeadOverlays(ped, data.headOverlays)
-    end
-
-    -- Cheveux
     if data.hair ~= nil then
         if type(data.hair) == "table" then
             applyHair(ped, data.hair)
@@ -360,18 +362,9 @@ function ApplyPreview(data)
         end
     end
 
-    -- Composants vêtements
-    if data.components then
-        applyComponents(ped, data.components)
-    end
-
-    -- Props
-    if data.props then
-        applyProps(ped, data.props)
-    end
-
-    -- Tatouages
-    if data.tattoos then
-        applyTattoos(ped, data.tattoos)
-    end
+    if data.components then applyComponents(ped, data.components) end
+    if data.props      then applyProps(ped, data.props)           end
+    if data.tattoos    then applyTattoos(ped, data.tattoos)       end
 end
+
+exports("ApplyPreview", ApplyPreview)

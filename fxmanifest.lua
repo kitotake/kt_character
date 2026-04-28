@@ -38,5 +38,7 @@ server_scripts {
 }
 
 client_exports {
-    "ApplyFullAppearance"
+    "ApplyFullAppearance",
+    "ApplyOutfit",
+    "ApplyPreview",
 }
