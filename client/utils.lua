@@ -1,0 +1,2 @@
+-- kt_character/client/utils.lua
+-- Intentionnellement vide — voir client/main.lua pour la gestion NUI.
