@@ -1,0 +1,464 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CREATOR.MODULE.SCSS
+// Scope : panneau wizard + barre caméra
+// N'a AUCUNE connaissance de AssetPicker, il s'y emboîte via stepContent
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+// ── ANIMATIONS ────────────────────────────────────────────────────────────
+@keyframes panelSlideIn {
+  from { transform: translateX(-28px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+@keyframes camSlideIn {
+  from { transform: translateX(28px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes dotGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 217, 255, 0.4); }
+  50%       { box-shadow: 0 0 20px rgba(0, 217, 255, 0.8); }
+}
+@keyframes msgIn {
+  from { transform: translateY(-8px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PANNEAU PRINCIPAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.container {
+  position: fixed;
+  left: $spacing-xl;
+  top: $spacing-xl;
+  width: 380px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  background: $panel;
+  border: 1px solid rgba(0, 217, 255, 0.12);
+  border-radius: $radius-md;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(0, 217, 255, 0.04) inset;
+
+  animation: panelSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.25); border-radius: 2px; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// BARRE CAMÉRA (côté droit)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.camPanel {
+  position: fixed;
+  right: $spacing-xl;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 82px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: stretch;
+
+  background: rgba(10, 10, 18, 0.92);
+  border: 1px solid rgba(0, 217, 255, 0.14);
+  border-radius: $radius-sm;
+  padding: $spacing-sm 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 217, 255, 0.05) inset;
+
+  animation: camSlideIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.camTitle {
+  font-size: 8px;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0, 217, 255, 0.4);
+  text-align: center;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.08);
+  margin-bottom: 2px;
+}
+
+.camBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 2px !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  border: 1px solid rgba(0, 217, 255, 0.08) !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+  width: 100%;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.12) !important;
+    border-color: rgba(0, 217, 255, 0.35) !important;
+    transform: scale(1.05) !important;
+  }
+  &:active {
+    transform: scale(0.95) !important;
+    background: rgba(0, 217, 255, 0.2) !important;
+  }
+}
+
+.camIcon {
+  font-size: 16px;
+  line-height: 1;
+  color: $accent;
+}
+
+.camLabel {
+  font-size: 8px;
+  color: $muted;
+  text-align: center;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STEP PROGRESS BAR
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.stepBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  position: relative;
+  padding: $spacing-md $spacing-lg $spacing-sm;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.07);
+  flex-shrink: 0;
+
+  // Ligne de connexion entre les dots
+  &::before {
+    content: '';
+    position: absolute;
+    left: calc(50% - 40px);
+    right: calc(50% - 40px);
+    top: calc($spacing-md + 14px);
+    height: 1px;
+    background: linear-gradient(90deg,
+      rgba(0, 217, 255, 0.08),
+      rgba(0, 217, 255, 0.25),
+      rgba(0, 217, 255, 0.08)
+    );
+  }
+}
+
+.stepDot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  cursor: default !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.stepDotIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 217, 255, 0.12);
+  color: $muted;
+  transition: $transition;
+  line-height: 1;
+}
+
+.stepDotLabel {
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $muted;
+  text-align: center;
+  white-space: nowrap;
+  transition: $transition;
+}
+
+// Étape terminée — cliquable
+.stepDone {
+  cursor: pointer !important;
+
+  .stepDotIcon {
+    background: rgba(0, 217, 255, 0.08);
+    border-color: rgba(0, 217, 255, 0.25);
+    color: $accent;
+    font-size: 10px;
+  }
+  .stepDotLabel { color: rgba(0, 217, 255, 0.55); }
+
+  &:hover .stepDotIcon {
+    background: rgba(0, 217, 255, 0.16);
+    border-color: $accent;
+  }
+}
+
+// Étape active
+.stepActive {
+  .stepDotIcon {
+    background: $accent;
+    border-color: $accent;
+    color: #000;
+    font-weight: $font-weight-bold;
+    animation: dotGlow 2s ease-in-out infinite;
+  }
+  .stepDotLabel {
+    color: $accent;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STEP HEADER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.stepHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px $spacing-lg 8px;
+  flex-shrink: 0;
+}
+
+.stepNum {
+  font-size: $font-size-xs;
+  font-family: $font-family-mono;
+  color: rgba(0, 217, 255, 0.35);
+  letter-spacing: 0.1em;
+  min-width: 32px;
+}
+
+.stepTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $text;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+}
+
+.closeBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: $text-secondary !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #ff8f8f !important;
+  }
+  &:disabled { opacity: 0.35 !important; cursor: not-allowed !important; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ZONE DE CONTENU — scrollable
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.stepContent {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 $spacing-md $spacing-sm;
+  min-height: 0;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 217, 255, 0.2);
+    border-radius: 2px;
+  }
+
+  // Quand le contenu est AssetPickerPage on enlève le padding
+  // (AssetPickerPage gère son propre spacing)
+  &.noPad {
+    padding: 0;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MESSAGES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.error {
+  margin: 0 $spacing-md 4px;
+  padding: 7px $spacing-md;
+  border-radius: $radius-xs;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  background: rgba($error, 0.1);
+  border: 1px solid rgba($error, 0.28);
+  color: #ff8080;
+  animation: msgIn 0.2s ease-out;
+  flex-shrink: 0;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// NAVIGATION (bas de panneau)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.navRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-sm;
+  padding: 10px $spacing-md $spacing-md;
+  border-top: 1px solid rgba(0, 217, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.navBtn {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: $text-secondary !important;
+  font-size: $font-size-sm !important;
+  padding: 7px $spacing-md !important;
+  border-radius: $radius-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+  &:disabled { opacity: 0.28 !important; cursor: not-allowed !important; }
+}
+
+.navBtnNext {
+  flex: 1;
+  background: rgba(0, 217, 255, 0.12) !important;
+  border: 1px solid rgba(0, 217, 255, 0.3) !important;
+  color: $accent !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-bold !important;
+  padding: 7px $spacing-lg !important;
+  border-radius: $radius-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.2) !important;
+    border-color: $accent !important;
+    box-shadow: 0 0 14px rgba(0, 217, 255, 0.18) !important;
+    transform: translateY(-1px) !important;
+  }
+}
+
+.submitBtn {
+  flex: 1;
+  padding: 8px $spacing-lg !important;
+  background: linear-gradient(135deg, $accent, $accent-light) !important;
+  border: none !important;
+  border-radius: $radius-sm !important;
+  color: #000 !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-bold !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+  transition: $transition !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 18px rgba(0, 217, 255, 0.25) !important;
+  transform: none !important;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  &:hover::after { transform: translateX(100%); }
+
+  &:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 24px rgba(0, 217, 255, 0.35) !important;
+  }
+  &:active { transform: translateY(0) !important; }
+  &:disabled {
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STEP IDENTITY — éléments spécifiques
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.genderRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-sm;
+}
+
+.genderBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: $spacing-md $spacing-sm !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1.5px solid rgba(0, 217, 255, 0.12) !important;
+  border-radius: $radius-sm !important;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(0, 217, 255, 0.28) !important;
+    transform: translateY(-2px) !important;
+  }
+}
+
+.genderActive {
+  background: rgba(0, 217, 255, 0.12) !important;
+  border-color: $accent !important;
+  box-shadow: 0 0 16px rgba(0, 217, 255, 0.15) !important;
+  transform: none !important;
+}
+
+.genderIcon  { font-size: 26px; line-height: 1; color: $accent; }
+.genderLabel { font-size: $font-size-md; font-weight: $font-weight-bold; color: $text; }
+.genderSub   { font-size: $font-size-xs; color: $muted; font-family: $font-family-mono; letter-spacing: 0.05em; }

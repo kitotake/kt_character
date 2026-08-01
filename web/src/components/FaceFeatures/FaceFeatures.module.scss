@@ -1,0 +1,38 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.wrapper {
+  @include flex-col($spacing-sm);
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-sm $spacing-md;
+}
+
+.resetRow {
+  @include flex-row($spacing-sm);
+  justify-content: flex-end;
+  padding-top: $spacing-xs;
+  border-top: 1px solid rgba(0, 217, 255, 0.08);
+}
+
+.resetBtn {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: $muted !important;
+  font-size: $font-size-xs !important;
+  padding: 4px 10px !important;
+  height: auto !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+
+  &:hover {
+    background: rgba($error, 0.1) !important;
+    border-color: rgba($error, 0.3) !important;
+    color: $error !important;
+  }
+}

@@ -1,0 +1,618 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ASSET PICKER — STYLES v2
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+// ── ROOT ──────────────────────────────────────────────────────────────────
+.picker {
+  @include flex-col(0);
+  width: 100%;
+  height: 100%;
+  background: $bg;
+  color: $text;
+  font-family: $font-family-body;
+  font-size: $font-size-md;
+}
+
+// ── TOPBAR ────────────────────────────────────────────────────────────────
+.topbar {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.08);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.genderBtn {
+  @include flex-row(6px);
+  align-items: center;
+  padding: 6px 14px;
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $muted;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: $transition;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover {
+    color: $text;
+    border-color: rgba(0, 217, 255, 0.3);
+    background: rgba(0, 217, 255, 0.05);
+  }
+  &.active {
+    background: rgba(0, 217, 255, 0.12);
+    border-color: $accent;
+    color: $accent;
+  }
+}
+
+.genderIcon { font-size: 15px; }
+
+.searchInput {
+  flex: 1;
+  min-width: 140px;
+  height: 32px;
+  font-size: $font-size-sm !important;
+  padding: 4px 10px !important;
+}
+
+.totalBadge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  background: rgba(255, 255, 255, 0.06);
+  color: $muted;
+  white-space: nowrap;
+  &.hasItems {
+    background: rgba(0, 217, 255, 0.12);
+    color: $accent;
+  }
+}
+
+// ── BODY ──────────────────────────────────────────────────────────────────
+.body {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// ── SIDEBAR ────────────────────────────────────────────────────────────────
+.sidebar {
+  border-right: 1px solid rgba(0, 217, 255, 0.08);
+  overflow-y: auto;
+  padding: $spacing-sm;
+  @include flex-col(0);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 217, 255, 0.2) transparent;
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.2); border-radius: 2px; }
+}
+
+.groupLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $muted;
+  padding: $spacing-sm $spacing-xs $spacing-xs;
+  margin-top: $spacing-xs;
+  &:first-child { margin-top: 0; }
+}
+
+.catBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px $spacing-xs;
+  border: 1px solid transparent;
+  border-radius: $radius-sm;
+  background: transparent;
+  color: $text-tertiary;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  text-align: left;
+  transition: $transition;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.04);
+    color: $text-secondary;
+  }
+  &.active {
+    background: rgba(0, 217, 255, 0.08);
+    border-color: rgba(0, 217, 255, 0.2);
+    color: $text;
+  }
+}
+
+.catLeft {
+  @include flex-row(6px);
+  align-items: center;
+  min-width: 0;
+}
+
+.catIcon { font-size: 14px; flex-shrink: 0; }
+.catLabel { font-size: $font-size-xs; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.catTag {
+  flex-shrink: 0;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  color: $muted;
+  font-family: $font-family-mono;
+  &.selected {
+    background: rgba(0, 217, 255, 0.15);
+    color: $accent;
+  }
+}
+
+// ── RIGHT PANEL ────────────────────────────────────────────────────────────
+.rightPanel {
+  @include flex-col(0);
+  min-height: 0;
+  overflow: hidden;
+}
+
+// ── PANEL HEADER ──────────────────────────────────────────────────────────
+.panelHeader {
+  @include flex-between;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.panelTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $text;
+}
+
+.panelInfo {
+  font-size: $font-size-xs;
+  color: $accent;
+  font-family: $font-family-mono;
+}
+
+// ── ASSET GRID ────────────────────────────────────────────────────────────
+.gridWrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-sm;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 217, 255, 0.2) transparent;
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.2); border-radius: 2px; }
+}
+
+.assetGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+  gap: 6px;
+}
+
+.assetItem {
+  position: relative;
+  border: 1px solid rgba(0, 217, 255, 0.08);
+  border-radius: $radius-sm;
+  overflow: hidden;
+  cursor: pointer;
+  background: $bg-secondary;
+  transition: $transition;
+  &:hover {
+    border-color: rgba(0, 217, 255, 0.3);
+    background: rgba(0, 217, 255, 0.04);
+  }
+  &.selected {
+    border: 2px solid $accent;
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+  }
+}
+
+.imgWrap {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: $bg-secondary;
+  img { width: 100%; height: 100%; object-fit: cover; display: block; }
+}
+
+.imgFallback {
+  @include flex-col(2px);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: $muted;
+}
+
+.fallbackIcon { font-size: 18px; }
+.fallbackIdx { font-size: 10px; font-family: $font-family-mono; }
+
+.itemLabel {
+  font-size: 10px;
+  text-align: center;
+  padding: 2px 3px;
+  color: $muted;
+  background: $bg;
+  line-height: 1.2;
+  .selected & { color: $accent; font-weight: $font-weight-semibold; }
+}
+
+.checkBadge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: $accent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: #000;
+  font-weight: $font-weight-bold;
+}
+
+// ── DETAIL PANEL (texture + color) ────────────────────────────────────────
+.detailPanel {
+  border-top: 1px solid rgba(0, 217, 255, 0.1);
+  background: rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+  @include flex-col(0);
+  overflow: hidden;
+}
+
+.detailHeader {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  padding: 6px $spacing-md;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.07);
+  gap: 0;
+}
+
+.detailTab {
+  padding: 4px 12px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: $muted;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: $transition;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover { color: $text-secondary; }
+  &.activeTab {
+    color: $accent;
+    border-bottom-color: $accent;
+    background: rgba(0, 217, 255, 0.05);
+  }
+}
+
+.detailBody {
+  padding: $spacing-sm $spacing-md;
+  max-height: 180px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 217, 255, 0.15) transparent;
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.15); border-radius: 2px; }
+}
+
+// ── TEXTURE STRIP ─────────────────────────────────────────────────────────
+.texStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.texThumb {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid rgba(0, 217, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  background: $bg-secondary;
+  transition: $transition;
+  flex-shrink: 0;
+  transform: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+
+  &:hover {
+    border-color: rgba(0, 217, 255, 0.35);
+    transform: scale(1.08) !important;
+  }
+  &.texSelected {
+    border: 2px solid $accent;
+    box-shadow: 0 0 8px rgba(0, 217, 255, 0.25) !important;
+  }
+
+  img { width: 100%; height: 100%; object-fit: cover; display: block; }
+}
+
+.texFallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-family: $font-family-mono;
+  color: $muted;
+  background: rgba(0, 217, 255, 0.04);
+}
+
+.texBadge {
+  position: absolute;
+  bottom: 1px;
+  right: 2px;
+  font-size: 9px;
+  font-family: $font-family-mono;
+  color: rgba(0, 217, 255, 0.6);
+  line-height: 1;
+}
+
+// ── COLOR GRID ────────────────────────────────────────────────────────────
+.colorSection {
+  @include flex-col(8px);
+}
+
+.colorLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: $muted;
+  @include flex-row(6px);
+  align-items: center;
+}
+
+.colorPreviewDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 217, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 3px;
+}
+
+.colorSwatch {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 3px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  padding: 0 !important;
+  min-width: unset !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: $transition !important;
+
+  &:hover {
+    transform: scale(1.2) !important;
+    z-index: 1;
+  }
+  &.swatchSelected {
+    border-color: $accent !important;
+    transform: scale(1.25) !important;
+    box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.4) !important;
+    z-index: 2;
+  }
+}
+
+.colorSubLabel {
+  font-size: 10px;
+  color: rgba(0, 217, 255, 0.5);
+  font-family: $font-family-mono;
+}
+
+.noDetail {
+  padding: $spacing-sm 0;
+  font-size: $font-size-sm;
+  color: $muted;
+  font-style: italic;
+  text-align: center;
+}
+
+// ── EMPTY STATE ───────────────────────────────────────────────────────────
+.emptyState {
+  @include flex-col($spacing-md);
+  align-items: center;
+  justify-content: center;
+  padding: 3rem $spacing-lg;
+  text-align: center;
+  color: $muted;
+  height: 100%;
+  min-height: 200px;
+}
+
+.emptyIcon { font-size: 36px; opacity: 0.4; }
+.emptyTitle { font-size: $font-size-md; color: $text-secondary; font-weight: $font-weight-semibold; }
+.emptyHint { font-size: $font-size-sm; }
+
+// ── SELECTION BAR ─────────────────────────────────────────────────────────
+.selBar {
+  border-top: 1px solid rgba(0, 217, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  @include flex-col($spacing-sm);
+  padding: $spacing-sm $spacing-md;
+  max-height: 240px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.2); border-radius: 2px; }
+}
+
+.selBarTop {
+  @include flex-between;
+  align-items: center;
+}
+
+.selBarTitle {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $muted;
+  @include flex-row(6px);
+  align-items: center;
+}
+
+.selBarDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $accent;
+  box-shadow: 0 0 6px $accent;
+}
+
+.clearAllBtn {
+  font-size: $font-size-xs !important;
+  padding: 3px 8px !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+  color: rgba(239, 68, 68, 0.7) !important;
+  transform: none !important;
+  box-shadow: none !important;
+  border-radius: $radius-xs !important;
+  height: auto !important;
+  &:hover { background: rgba(239, 68, 68, 0.15) !important; color: #ef4444 !important; }
+}
+
+.selRows { @include flex-col(3px); }
+
+.selRow {
+  @include flex-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: rgba(0, 217, 255, 0.04);
+  border: 1px solid rgba(0, 217, 255, 0.08);
+  border-radius: $radius-xs;
+  font-size: $font-size-xs;
+}
+
+.selRowLeft {
+  @include flex-row(6px);
+  align-items: center;
+  color: $text-secondary;
+  min-width: 0;
+}
+
+.selRowIcon { font-size: 13px; flex-shrink: 0; }
+.selRowLabel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.selRowRight {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.selRowCode {
+  font-family: $font-family-mono;
+  font-size: 11px;
+  background: rgba(0, 217, 255, 0.1);
+  padding: 1px 5px;
+  border-radius: $radius-xs;
+  color: $accent;
+}
+
+// ── mini couleur dans selRow ───────────────────────────────────────────────
+.selRowColor {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.selRowDel {
+  background: none !important;
+  border: none !important;
+  color: $muted !important;
+  padding: 0 2px !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  cursor: pointer;
+  transform: none !important;
+  box-shadow: none !important;
+  height: auto !important;
+  min-width: unset !important;
+  display: flex;
+  align-items: center;
+  &:hover { color: #ef4444 !important; }
+}
+
+.actionsRow {
+  @include flex-row($spacing-sm);
+  align-items: center;
+}
+
+.validateBtn {
+  flex: 1;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-bold !important;
+  padding: 7px 16px !important;
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(0, 217, 255, 0.1)) !important;
+  border: 1px solid $accent !important;
+  color: $accent !important;
+  border-radius: $radius-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+  @include flex-row(6px);
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.03em;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.25) !important;
+    box-shadow: 0 0 16px rgba(0, 217, 255, 0.2) !important;
+    transform: translateY(-1px) !important;
+  }
+  &:disabled {
+    opacity: 0.35 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.selPlaceholder {
+  @include flex-row(8px);
+  align-items: center;
+  padding: $spacing-xs;
+  color: $muted;
+  font-size: $font-size-xs;
+  font-style: italic;
+}

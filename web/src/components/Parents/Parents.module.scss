@@ -1,0 +1,60 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.wrapper {
+  @include flex-col($spacing-md);
+  width: 100%;
+}
+
+// ── BLEND BAR ─────────────────────────────────────────────────────────────
+.blendBar {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  background: rgba(0, 217, 255, 0.04);
+  border: 1px solid rgba(0, 217, 255, 0.1);
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+}
+
+.blendLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+  color: $accent;
+  white-space: nowrap;
+  min-width: 60px;
+  font-family: $font-family-mono;
+  letter-spacing: 0.04em;
+
+  &:last-child {
+    text-align: right;
+  }
+}
+
+.barTrack {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: linear-gradient(90deg, $accent, $accent-light);
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+// ── GRID SLIDERS ──────────────────────────────────────────────────────────
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+}
+
+// ── DIVIDER ───────────────────────────────────────────────────────────────
+.divider {
+  height: 1px;
+  background: rgba(0, 217, 255, 0.08);
+  margin: $spacing-xs 0;
+}

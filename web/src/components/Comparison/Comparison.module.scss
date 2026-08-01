@@ -1,0 +1,252 @@
+@use "../style/variables.scss" as *;
+@use "../style/mixins.scss" as *;
+
+// ── OVERLAY ────────────────────────────────────────────────────────────────
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+ /* backdrop-filter: blur(8px);*/
+  z-index: $z-modal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// ── MODAL ──────────────────────────────────────────────────────────────────
+.modal {
+  background: $panel;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius;
+  width: 520px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: $shadow-lg;
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── HEADER ────────────────────────────────────────────────────────────────
+.header {
+  @include flex-between;
+  align-items: center;
+  padding: $spacing-lg;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  h2 {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $text;
+  }
+}
+
+.closeBtn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: $muted !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: $radius-sm !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+
+  &:hover {
+    background: rgba($error, 0.15) !important;
+    border-color: rgba($error, 0.3) !important;
+    color: $error !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// ── PRESET GRID (SELECTION SCREEN) ────────────────────────────────────────
+.presetGrid {
+  padding: $spacing-lg;
+  @include flex-col($spacing-sm);
+}
+
+.compareGroup {
+  @include flex-col($spacing-sm);
+}
+
+.presetCard {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: $radius-sm !important;
+  padding: $spacing-md !important;
+  text-align: left;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+  @include flex-col(6px);
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.08) !important;
+    border-color: rgba(0, 217, 255, 0.3) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  &.vs {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-style: dashed !important;
+  }
+}
+
+.name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $text;
+  margin: 0;
+}
+
+.preview {
+  @include flex-row($spacing-md);
+}
+
+.stat {
+  font-size: $font-size-sm;
+  color: $muted;
+
+  strong {
+    color: $text-secondary;
+  }
+}
+
+// ── COMPARISON VIEW ───────────────────────────────────────────────────────
+.comparison {
+  @include flex-row(0);
+  padding: $spacing-lg;
+}
+
+.side {
+  flex: 1;
+  @include flex-col($spacing-sm);
+
+  h3 {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $text;
+    margin-bottom: $spacing-sm;
+  }
+}
+
+.divider {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0 $spacing-lg;
+}
+
+.stats {
+  @include flex-col(6px);
+}
+
+// ── STAT ROW IN COMPARISON ────────────────────────────────────────────────
+.stat {
+  @include flex-between;
+  align-items: center;
+  padding: 8px $spacing-sm;
+  border-radius: $radius-sm;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: $font-size-sm;
+  transition: $transition;
+
+  span {
+    color: $muted;
+  }
+
+  strong {
+    font-weight: $font-weight-bold;
+    font-size: $font-size-md;
+  }
+}
+
+// ── DIFF COLORS ───────────────────────────────────────────────────────────
+.higher {
+  border-color: rgba($success, 0.3) !important;
+  background: rgba($success, 0.06) !important;
+
+  strong {
+    color: $success;
+  }
+}
+
+.lower {
+  border-color: rgba($error, 0.3) !important;
+  background: rgba($error, 0.06) !important;
+
+  strong {
+    color: $error;
+  }
+}
+
+.equal {
+  strong {
+    color: $text-secondary;
+  }
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────
+.actions {
+  @include flex-row($spacing-sm);
+  justify-content: flex-end;
+  padding: $spacing-md $spacing-lg;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.backBtn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: $text-secondary !important;
+  font-size: $font-size-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.closeActionBtn {
+  font-size: $font-size-sm !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+
+  &:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}

@@ -1,0 +1,205 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ASSETPICKERPAGE.MODULE.SCSS
+// Scope : page wrapper autour d'AssetPicker
+//         layout 2 colonnes : [mini-preview | picker]
+// N'a AUCUNE connaissance du Creator, il s'y emboîte dans stepContent
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+// ── ANIMATIONS ────────────────────────────────────────────────────────────
+@keyframes previewFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes statCountUp {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ROOT — occupe tout l'espace disponible dans stepContent
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// LAYOUT 2 COLONNES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.layout {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// COLONNE GAUCHE — mini preview
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.previewCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm 5px;
+  border-right: 1px solid rgba(0, 217, 255, 0.07);
+  background: rgba(0, 0, 0, 0.12);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+
+  animation: previewFadeIn 0.35s ease both;
+}
+
+// ── Label "Aperçu" ────────────────────────────────────────────────────────
+.previewLabel {
+  font-size: 8px;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 217, 255, 0.35);
+  text-align: center;
+  white-space: nowrap;
+}
+
+// ── SVG wrapper ───────────────────────────────────────────────────────────
+.previewSvgWrap {
+  width: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 217, 255, 0.1);
+  background: linear-gradient(175deg, #12121e 0%, #08080f 100%);
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 217, 255, 0.04) inset;
+  flex-shrink: 0;
+  transition: box-shadow $transition;
+
+  &:hover {
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.6),
+      0 0 12px rgba(0, 217, 255, 0.08);
+  }
+}
+
+// ── Séparateur ────────────────────────────────────────────────────────────
+.previewDivider {
+  width: 100%;
+  height: 1px;
+  background: rgba(0, 217, 255, 0.06);
+  flex-shrink: 0;
+}
+
+// ── Bloc stats ────────────────────────────────────────────────────────────
+.previewStats {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.statKey {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.2);
+  font-family: $font-family-mono;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.statVal {
+  font-size: 9px;
+  font-weight: $font-weight-bold;
+  color: $accent;
+  font-family: $font-family-mono;
+  animation: statCountUp 0.2s ease;
+}
+
+// ── Boutons mini ──────────────────────────────────────────────────────────
+.previewActions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 0 4px;
+  margin-top: auto;
+}
+
+.miniBtn {
+  width: 100%;
+  padding: 4px 0 !important;
+  font-size: 8px !important;
+  font-weight: $font-weight-bold !important;
+  letter-spacing: 0.07em !important;
+  text-transform: uppercase !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(0, 217, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.25) !important;
+  border-radius: $radius-xs !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 217, 255, 0.08) !important;
+    border-color: rgba(0, 217, 255, 0.22) !important;
+    color: $accent !important;
+  }
+}
+
+.miniBtnDanger {
+  // same base, danger color
+  width: 100%;
+  padding: 4px 0 !important;
+  font-size: 8px !important;
+  font-weight: $font-weight-bold !important;
+  letter-spacing: 0.07em !important;
+  text-transform: uppercase !important;
+  background: rgba(239, 68, 68, 0.04) !important;
+  border: 1px solid rgba(239, 68, 68, 0.12) !important;
+  color: rgba(239, 68, 68, 0.45) !important;
+  border-radius: $radius-xs !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: #ef4444 !important;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// COLONNE DROITE — zone picker
+// AssetPicker.module.scss gère tout le contenu interne
+// ici on s'occupe uniquement du conteneur
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.pickerArea {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  // Pas de padding, pas de background — AssetPicker gère ça
+}

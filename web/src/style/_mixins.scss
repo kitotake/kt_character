@@ -1,0 +1,91 @@
+@use "variables" as *;
+
+@mixin flex-center { display: flex; align-items: center; justify-content: center; }
+@mixin flex-row($gap: $spacing-md) { display: flex; flex-direction: row; gap: $gap; }
+@mixin flex-col($gap: $spacing-md) { display: flex; flex-direction: column; gap: $gap; }
+@mixin flex-between { display: flex; align-items: center; justify-content: space-between; }
+
+@mixin truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@mixin input-base {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(0, 217, 255, 0.15);
+  color: $text;
+  border-radius: $radius-sm;
+  padding: $spacing-sm $spacing-md;
+  font-family: $font-family-body;
+  font-size: $font-size-md;
+  transition: $transition;
+  &::placeholder { color: $muted; }
+  &:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(0, 217, 255, 0.25); }
+  &:focus { outline: none; background: rgba(0, 217, 255, 0.08); border-color: $accent; box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.2); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+@mixin button-base {
+  padding: $spacing-sm $spacing-md;
+  border: none;
+  border-radius: $radius-sm;
+  font-family: $font-family-body;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: $transition;
+  white-space: nowrap;
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background: $accent;
+  color: #000;
+  box-shadow: $shadow-md;
+  &:hover:not(:disabled) { background: $accent-light; box-shadow: $shadow-lg, $shadow-glow; transform: translateY(-2px); }
+  &:active:not(:disabled) { transform: translateY(0); }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background: rgba(0, 217, 255, 0.1);
+  color: $accent;
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  &:hover:not(:disabled) { background: rgba(0, 217, 255, 0.15); border-color: $accent; }
+}
+
+@mixin panel {
+  background: $panel;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  transition: $transition;
+}
+
+@mixin visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border-width: 0;
+}
+
+@mixin scroll-smooth {
+  scroll-behavior: smooth;
+  &::-webkit-scrollbar { width: 6px; height: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.3); border-radius: 3px; &:hover { background: rgba(0, 217, 255, 0.5); } }
+}
+
+@mixin responsive-breakpoint($bp) {
+  @if $bp == "xs" { @media (max-width: $breakpoint-xs) { @content; } }
+  @else if $bp == "sm" { @media (max-width: $breakpoint-sm) { @content; } }
+  @else if $bp == "md" { @media (max-width: $breakpoint-md) { @content; } }
+  @else if $bp == "lg" { @media (max-width: $breakpoint-lg) { @content; } }
+  @else if $bp == "xl" { @media (max-width: $breakpoint-xl) { @content; } }
+}
+
+@mixin container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-left: $spacing-lg;
+  padding-right: $spacing-lg;
+}

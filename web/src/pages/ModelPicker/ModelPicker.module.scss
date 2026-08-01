@@ -1,0 +1,152 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// MODEL PICKER — STYLES
+// Chemin : web/src/pages/ModelPicker/ModelPicker.module.scss
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+// ── WRAPPER ───────────────────────────────────────────────────────────────
+.wrapper {
+  @include flex-col($spacing-md);
+  width: 100%;
+}
+
+// ── FILTRES GENRE ─────────────────────────────────────────────────────────
+.filters {
+  @include flex-row($spacing-xs);
+  align-items: center;
+  padding: $spacing-xs;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 217, 255, 0.08);
+  border-radius: $radius-sm;
+  width: fit-content;
+}
+
+.filterBtn {
+  padding: 5px 14px;
+  border: 1px solid transparent;
+  border-radius: $radius-xs;
+  background: transparent;
+  color: $muted;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: $transition;
+  transform: none !important;
+  box-shadow: none !important;
+  white-space: nowrap;
+
+  &:hover {
+    color: $text-secondary;
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.filterActive {
+  background: rgba(0, 217, 255, 0.12) !important;
+  border-color: rgba(0, 217, 255, 0.3) !important;
+  color: $accent !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+// ── INFO MODÈLE SÉLECTIONNÉ ───────────────────────────────────────────────
+.selectedInfo {
+  @include flex-row($spacing-sm);
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(0, 217, 255, 0.05);
+  border: 1px solid rgba(0, 217, 255, 0.12);
+  border-radius: $radius-sm;
+  min-height: 36px;
+}
+
+.selectedDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.selectedLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $text;
+}
+
+.selectedModel {
+  font-size: $font-size-xs;
+  color: $muted;
+  font-family: $font-family-mono;
+  margin-left: auto;
+  letter-spacing: 0.04em;
+}
+
+// ── GRILLE DE MODÈLES ─────────────────────────────────────────────────────
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: $spacing-sm;
+}
+
+// ── CARTE MODÈLE ──────────────────────────────────────────────────────────
+.modelCard {
+  @include flex-col(0);
+  align-items: center;
+  padding: 0;
+  border: 1px solid rgba(0, 217, 255, 0.08);
+  border-radius: $radius-sm;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  overflow: hidden;
+  transition: $transition;
+  transform: none !important;
+  box-shadow: none !important;
+  position: relative;
+
+  &:hover {
+    border-color: rgba(0, 217, 255, 0.25);
+    background: rgba(0, 217, 255, 0.04);
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3) !important;
+  }
+}
+
+.modelSelected {
+  border-color: $accent !important;
+  background: rgba(0, 217, 255, 0.06) !important;
+  box-shadow: 0 0 0 1px rgba(0, 217, 255, 0.2), 0 6px 20px rgba(0, 0, 0, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+// ── SVG PREVIEW ───────────────────────────────────────────────────────────
+.preview {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: $radius-xs $radius-xs 0 0;
+}
+
+// ── LABEL DU MODÈLE ───────────────────────────────────────────────────────
+.modelLabel {
+  width: 100%;
+  padding: 5px $spacing-xs;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  text-align: center;
+  color: $text-secondary;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(0, 217, 255, 0.06);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: $transition;
+
+  .modelSelected & {
+    color: $accent;
+    background: rgba(0, 217, 255, 0.08);
+    border-top-color: rgba(0, 217, 255, 0.15);
+  }
+}
