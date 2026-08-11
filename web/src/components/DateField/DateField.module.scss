@@ -1,0 +1,29 @@
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+.wrapper { @include flex-col(6px); width: 100%; }
+
+.label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $muted;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.required { color: $error; margin-left: $spacing-xs; }
+
+.input {
+  @include input-base;
+  font-size: $font-size-md;
+  font-family: $font-family-mono;
+  letter-spacing: 0.1em;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.hint { font-size: $font-size-xs; color: $text-tertiary; font-style: italic; }
+.error { font-size: $font-size-xs; color: $error; font-weight: $font-weight-semibold; }

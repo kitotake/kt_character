@@ -1,0 +1,226 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CLOTHINGWINDOW.MODULE.SCSS
+// Fenêtre 100% indépendante : son propre container, header, body, footer.
+// N'a aucune connaissance d'IdentityWindow.
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+@keyframes panelSlideIn {
+  from { transform: translateX(-28px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+@keyframes camSlideIn {
+  from { transform: translateX(28px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes msgIn {
+  from { transform: translateY(-8px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CONTAINER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.container {
+  position: fixed;
+  left: $spacing-xl;
+  top: $spacing-xl;
+  width: 380px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  background: $panel;
+  border: 1px solid rgba(0, 217, 255, 0.12);
+  border-radius: $radius-md;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(0, 217, 255, 0.04) inset;
+
+  animation: panelSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.25); border-radius: 2px; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PANNEAU CAMÉRA (côté droit)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.camPanel {
+  position: fixed;
+  right: $spacing-xl;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 82px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: stretch;
+
+  background: rgba(10, 10, 18, 0.92);
+  border: 1px solid rgba(0, 217, 255, 0.14);
+  border-radius: $radius-sm;
+  padding: $spacing-sm 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 217, 255, 0.05) inset;
+
+  animation: camSlideIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.camTitle {
+  font-size: 8px;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(0, 217, 255, 0.4);
+  text-align: center;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.08);
+  margin-bottom: 2px;
+}
+
+.camBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 2px !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  border: 1px solid rgba(0, 217, 255, 0.08) !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+  width: 100%;
+
+  &:hover { background: rgba(0, 217, 255, 0.12) !important; border-color: rgba(0, 217, 255, 0.35) !important; transform: scale(1.05) !important; }
+  &:active { transform: scale(0.95) !important; background: rgba(0, 217, 255, 0.2) !important; }
+}
+
+.camIcon { font-size: 16px; line-height: 1; color: $accent; }
+
+.camLabel {
+  font-size: 8px;
+  color: $muted;
+  text-align: center;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// HEADER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg $spacing-sm;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.07);
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $text;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+}
+
+.closeBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: $text-secondary !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: rgba(239, 68, 68, 0.12) !important; border-color: rgba(239, 68, 68, 0.3) !important; color: #ff8f8f !important; }
+  &:disabled { opacity: 0.35 !important; cursor: not-allowed !important; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ERREUR
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.error {
+  margin: $spacing-sm $spacing-md 0;
+  padding: 7px $spacing-md;
+  border-radius: $radius-xs;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  background: rgba($error, 0.1);
+  border: 1px solid rgba($error, 0.28);
+  color: #ff8080;
+  animation: msgIn 0.2s ease-out;
+  flex-shrink: 0;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// BODY — AssetPickerPage gère tout son propre espace/scroll
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FOOTER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.footer {
+  padding: 10px $spacing-md $spacing-md;
+  border-top: 1px solid rgba(0, 217, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 8px $spacing-lg !important;
+  background: linear-gradient(135deg, $accent, $accent-light) !important;
+  border: none !important;
+  border-radius: $radius-sm !important;
+  color: #000 !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-bold !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+  transition: $transition !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 18px rgba(0, 217, 255, 0.25) !important;
+  transform: none !important;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  &:hover::after { transform: translateX(100%); }
+
+  &:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 24px rgba(0, 217, 255, 0.35) !important; }
+  &:active { transform: translateY(0) !important; }
+  &:disabled { opacity: 0.4 !important; cursor: not-allowed !important; transform: none !important; box-shadow: none !important; }
+}

@@ -11,6 +11,14 @@ dependencies {
     'union',
 }
 
+-- ── NUI (front web/dist — build avec `npm run build` dans web/ avant deploy) ─
+ui_page 'web/dist/index.html'
+
+files {
+    'web/dist/index.html',
+    'web/dist/**/*',
+}
+
 -- ── SHARED ────────────────────────────────────────────────────────────────
 shared_scripts {
     'shared/config.lua',
@@ -25,6 +33,7 @@ client_scripts {
     'client/core/camera.lua',
     'client/core/preview.lua',
     'client/core/events.lua',
+    'client/core/ui.lua',
     'client/api/exports.lua',
     'client/main.lua',
 }

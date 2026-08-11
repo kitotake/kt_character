@@ -1,0 +1,207 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// IDENTITYWINDOW.MODULE.SCSS
+// Fenêtre 100% indépendante : son propre container, header, body, footer.
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@use "../../style/variables" as *;
+@use "../../style/mixins" as *;
+
+@keyframes panelSlideIn {
+  from { transform: translateX(-28px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+@keyframes msgIn {
+  from { transform: translateY(-8px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CONTAINER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.container {
+  position: fixed;
+  left: $spacing-xl;
+  top: $spacing-xl;
+  width: 380px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  background: $panel;
+  border: 1px solid rgba(0, 217, 255, 0.12);
+  border-radius: $radius-md;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(0, 217, 255, 0.04) inset;
+
+  animation: panelSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 1;
+  transform: scale(1);
+  // Doit rester synchro avec CLOSE_TRANSITION_MS dans IdentityWindow.tsx
+  transition: opacity 0.22s ease, transform 0.22s ease;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.25); border-radius: 2px; }
+}
+
+// Fermeture de cette fenêtre juste avant l'ouverture de ClothingWindow
+.closing {
+  opacity: 0;
+  transform: scale(0.97);
+  animation: none;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// HEADER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg $spacing-sm;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(0, 217, 255, 0.07);
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $text;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+}
+
+.closeBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: $text-secondary !important;
+  font-size: 18px !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  transform: none !important;
+  box-shadow: none !important;
+  transition: $transition !important;
+  cursor: pointer;
+
+  &:hover:not(:disabled) { background: rgba(239, 68, 68, 0.12) !important; border-color: rgba(239, 68, 68, 0.3) !important; color: #ff8f8f !important; }
+  &:disabled { opacity: 0.35 !important; cursor: not-allowed !important; }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ERREUR
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.error {
+  margin: $spacing-sm $spacing-md 0;
+  padding: 7px $spacing-md;
+  border-radius: $radius-xs;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  background: rgba($error, 0.1);
+  border: 1px solid rgba($error, 0.28);
+  color: #ff8080;
+  animation: msgIn 0.2s ease-out;
+  flex-shrink: 0;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// BODY — scrollable
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: $spacing-md $spacing-md $spacing-sm;
+  min-height: 0;
+  @include flex-col($spacing-md);
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(0, 217, 255, 0.2); border-radius: 2px; }
+}
+
+.genderRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-sm;
+}
+
+.genderBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: $spacing-md $spacing-sm !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1.5px solid rgba(0, 217, 255, 0.12) !important;
+  border-radius: $radius-sm !important;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover { background: rgba(255, 255, 255, 0.06) !important; border-color: rgba(0, 217, 255, 0.28) !important; transform: translateY(-2px) !important; }
+  &:disabled { opacity: 0.5 !important; cursor: not-allowed !important; transform: none !important; }
+}
+
+.genderActive {
+  background: rgba(0, 217, 255, 0.12) !important;
+  border-color: $accent !important;
+  box-shadow: 0 0 16px rgba(0, 217, 255, 0.15) !important;
+  transform: none !important;
+}
+
+.genderIcon  { font-size: 26px; line-height: 1; color: $accent; }
+.genderLabel { font-size: $font-size-md; font-weight: $font-weight-bold; color: $text; }
+.genderSub   { font-size: $font-size-xs; color: $muted; font-family: $font-family-mono; letter-spacing: 0.05em; }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FOOTER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.footer {
+  padding: 10px $spacing-md $spacing-md;
+  border-top: 1px solid rgba(0, 217, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.continueBtn {
+  width: 100%;
+  padding: 8px $spacing-lg !important;
+  background: linear-gradient(135deg, $accent, $accent-light) !important;
+  border: none !important;
+  border-radius: $radius-sm !important;
+  color: #000 !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-bold !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+  transition: $transition !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 18px rgba(0, 217, 255, 0.25) !important;
+  transform: none !important;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+  }
+  &:hover::after { transform: translateX(100%); }
+
+  &:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 24px rgba(0, 217, 255, 0.35) !important; }
+  &:active { transform: translateY(0) !important; }
+  &:disabled { opacity: 0.6 !important; cursor: not-allowed !important; transform: none !important; box-shadow: none !important; }
+}

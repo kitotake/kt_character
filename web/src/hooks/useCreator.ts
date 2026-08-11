@@ -29,12 +29,8 @@ export interface IdentityData {
   gender: "mp_m_freemode_01" | "mp_f_freemode_01";
 }
 
-export const STEPS = [
-  { id: "identity", label: "Identité", icon: "👤", tab: "identity" },
-  { id: "clothing", label: "Tenue",    icon: "👔", tab: "clothing" },
-] as const;
-
-export type StepId = typeof STEPS[number]["id"];
+// Deux fenêtres indépendantes, plus de wizard à étapes.
+export type Phase = "identity" | "clothing";
 
 // ─── Validation ───────────────────────────────────────────────────────────
 function validateIdentity(identity: IdentityData): Record<string, string> {
@@ -64,7 +60,7 @@ function validateIdentity(identity: IdentityData): Record<string, string> {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 export function useCreator() {
   const [visible,     setVisible]     = useState(false);
-  const [stepIndex,   setStepIndex]   = useState(0);
+  const [phase,       setPhase]       = useState<Phase>("identity");
   const [errors,      setErrors]      = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState("");
   const [submitting,  setSubmitting]  = useState(false);
@@ -112,36 +108,27 @@ export function useCreator() {
     setVisible(false);
   }, [nuiFetch]);
 
-  const goToStep = useCallback((index: number) => {
-    const step = STEPS[index];
-    if (!step) return;
-    setStepIndex(index);
-    nuiFetch("tabChange", { tab: step.tab });
-  }, [nuiFetch]);
-
-  const nextStep = useCallback(() => {
-    if (stepIndex === 0) {
-      const fieldErrors = validateIdentity(identity);
-      if (Object.keys(fieldErrors).length > 0) { setErrors(fieldErrors); return; }
-      setErrors({});
-    }
-    if (stepIndex < STEPS.length - 1) goToStep(stepIndex + 1);
-  }, [stepIndex, identity, goToStep]);
-
-  const prevStep = useCallback(() => {
-    if (stepIndex > 0) goToStep(stepIndex - 1);
-  }, [stepIndex, goToStep]);
+  // Fenêtre Identité → Fenêtre Tenue. Sens unique : les données identité
+  // sont validées puis "figées" (sauvegarde temporaire côté state React),
+  // la fenêtre Identité se ferme et la fenêtre Tenue s'ouvre.
+  const completeIdentity = useCallback(() => {
+    const fieldErrors = validateIdentity(identity);
+    if (Object.keys(fieldErrors).length > 0) { setErrors(fieldErrors); return; }
+    setErrors({});
+    setPhase("clothing");
+    nuiFetch("tabChange", { tab: "clothing" });
+  }, [identity, nuiFetch]);
 
   const handleSubmit = useCallback(async () => {
     const fieldErrors = validateIdentity(identity);
-    if (Object.keys(fieldErrors).length > 0) { setErrors(fieldErrors); goToStep(0); return; }
+    if (Object.keys(fieldErrors).length > 0) { setErrors(fieldErrors); setPhase("identity"); return; }
     setErrors({});
     setSubmitting(true);
     const created = await nuiFetch("createCharacter", buildPayload());
     if (!created) { setServerError("La création du personnage a échoué."); setSubmitting(false); return; }
     setSubmitting(false);
     await closeUI();
-  }, [identity, buildPayload, nuiFetch, goToStep, closeUI]);
+  }, [identity, buildPayload, nuiFetch, closeUI]);
 
   const sendPreview = useCallback((patch: object) => {
     nuiFetch("update", patch);
@@ -198,7 +185,7 @@ export function useCreator() {
       switch (msg.type) {
         case "open":
           setVisible(true);
-          setStepIndex(0);
+          setPhase("identity");
           setErrors({});
           setServerError("");
           setSubmitting(false);
@@ -256,11 +243,9 @@ export function useCreator() {
   }, [identity.dateofbirth]);
 
   return {
-    visible, stepIndex, errors, serverError, submitting,
-    isLastStep: stepIndex === STEPS.length - 1,
-    currentStep: STEPS[stepIndex],
+    visible, phase, errors, serverError, submitting,
     identity, headBlend, faceFeatures, headOverlays, hair, components, props, tattoos,
-    closeUI, goToStep, nextStep, prevStep, handleSubmit, camControl, getAge,
+    closeUI, completeIdentity, handleSubmit, camControl, getAge,
     updateIdentity, updateHeadBlend, updateFaceFeatures, updateHeadOverlays,
     updateHair, updateComponents, updateProps, updateTattoos,
   };
