@@ -412,7 +412,15 @@ export default function AssetPicker({
                   <AssetItem
                     key={i}
                     index={i}
-                    imgSrc={getImgSrc(activeCat, i, activeSel?.texture ?? 0)}
+                    // Seule la vignette du drawable réellement sélectionné doit
+                    // refléter la texture choisie ; toutes les autres vignettes
+                    // doivent garder leur aperçu par défaut (texture 0). Avant ce
+                    // correctif, activeSel?.texture était appliqué à TOUS les `i`,
+                    // donc changer de texture faisait pointer la quasi-totalité
+                    // des vignettes vers un fichier inexistant (la plupart des
+                    // drawables n'ont pas autant de textures que celui sélectionné)
+                    // et « déchargeait » leurs images (bascule en repli 🖼️).
+                    imgSrc={getImgSrc(activeCat, i, i === activeSel?.drawable ? (activeSel?.texture ?? 0) : 0)}
                     selected={activeSel?.drawable === i}
                     onPick={(idx) => pickItem(activeCat.id, idx)}
                   />

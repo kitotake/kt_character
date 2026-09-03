@@ -177,19 +177,34 @@ RegisterNetEvent("kt_character:reloadSkin", function(unique_id)
     local src = source
     if not unique_id or unique_id == "" then return end
 
-    exports.oxmysql:execute([[
-        SELECT c.ped_model, c.position, ca.skin_data, ca.face_features, ca.tattoos
-        FROM characters c
-        LEFT JOIN character_appearances ca ON ca.unique_id = c.unique_id
-        WHERE c.unique_id = ? LIMIT 1
-    ]],
-    { unique_id },
-    function(results)
-        if not results or #results == 0 then return end
-        local row = CharacterService.BuildCharacterData(results[1])
-        row.unique_id = unique_id
-        TriggerClientEvent("kt_appearance:apply", src, row)
-    end)
+    -- P0.3 : ce handler renvoyait l'apparence de n'importe quel unique_id
+    -- fourni par le client, sans vérifier qu'il appartient au joueur appelant.
+    -- Même vérification que C2S_UPDATE_APPEARANCE / C2S_SAVE_CLOTHING plus haut
+    -- dans ce fichier : identifier = joueur connecté ET unique_id = personnage demandé.
+    local license = Identifiers.getLicense(src)
+    if not license then return end
+
+    exports.oxmysql:execute(
+        "SELECT 1 FROM user_character WHERE identifier = ? AND unique_id = ? LIMIT 1",
+        { license, unique_id },
+        function(check)
+            if not check or #check == 0 then return end
+
+            exports.oxmysql:execute([[
+                SELECT c.ped_model, c.position, ca.skin_data, ca.face_features, ca.tattoos
+                FROM characters c
+                LEFT JOIN character_appearances ca ON ca.unique_id = c.unique_id
+                WHERE c.unique_id = ? LIMIT 1
+            ]],
+            { unique_id },
+            function(results)
+                if not results or #results == 0 then return end
+                local row = CharacterService.BuildCharacterData(results[1])
+                row.unique_id = unique_id
+                TriggerClientEvent("kt_appearance:apply", src, row)
+            end)
+        end
+    )
 end)
 
 -- ── SKIN EDIT REQUEST ─────────────────────────────────────────────────────
@@ -198,25 +213,39 @@ RegisterNetEvent(KT.Events.C2S_REQUEST_SKIN_EDIT, function(unique_id)
     local src = source
     if not unique_id then return end
 
-    exports.oxmysql:execute([[
-        SELECT c.ped_model, ca.skin_data, ca.face_features, ca.tattoos
-        FROM characters c
-        LEFT JOIN character_appearances ca ON ca.unique_id = c.unique_id
-        WHERE c.unique_id = ? LIMIT 1
-    ]],
-    { unique_id },
-    function(result)
-        if not result or #result == 0 then return end
+    -- P0.3 (même faille que reloadSkin, même fichier, même table
+    -- character_appearances — explicitement dans le périmètre de la demande) :
+    -- vérification de propriété avant de renvoyer les données d'apparence.
+    local license = Identifiers.getLicense(src)
+    if not license then return end
 
-        local row      = result[1]
-        local skinData = Utils.decodeJSON(row.skin_data)
-        local ped_model = Utils.normalizePedModel(row.ped_model)
+    exports.oxmysql:execute(
+        "SELECT 1 FROM user_character WHERE identifier = ? AND unique_id = ? LIMIT 1",
+        { license, unique_id },
+        function(check)
+            if not check or #check == 0 then return end
 
-        skinData.ped_model    = ped_model
-        skinData.gender       = Utils.modelToGender(ped_model)
-        skinData.faceFeatures = Utils.decodeJSON(row.face_features)
-        skinData.tattoos      = Utils.decodeJSON(row.tattoos)
+            exports.oxmysql:execute([[
+                SELECT c.ped_model, ca.skin_data, ca.face_features, ca.tattoos
+                FROM characters c
+                LEFT JOIN character_appearances ca ON ca.unique_id = c.unique_id
+                WHERE c.unique_id = ? LIMIT 1
+            ]],
+            { unique_id },
+            function(result)
+                if not result or #result == 0 then return end
 
-        TriggerClientEvent(KT.Events.S2C_SKIN_EDIT_DATA, src, skinData)
-    end)
+                local row      = result[1]
+                local skinData = Utils.decodeJSON(row.skin_data)
+                local ped_model = Utils.normalizePedModel(row.ped_model)
+
+                skinData.ped_model    = ped_model
+                skinData.gender       = Utils.modelToGender(ped_model)
+                skinData.faceFeatures = Utils.decodeJSON(row.face_features)
+                skinData.tattoos      = Utils.decodeJSON(row.tattoos)
+
+                TriggerClientEvent(KT.Events.S2C_SKIN_EDIT_DATA, src, skinData)
+            end)
+        end
+    )
 end)

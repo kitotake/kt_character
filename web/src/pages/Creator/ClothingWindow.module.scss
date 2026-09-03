@@ -26,7 +26,18 @@
   position: fixed;
   left: $spacing-xl;
   top: $spacing-xl;
-  width: 380px;
+  // 380px était bien trop étroit pour un layout à 3 colonnes (aperçu 96px +
+  // catégories 180px + miniatures) : la colonne de droite n'avait quasiment
+  // plus d'espace, provoquant du contenu coupé et le panneau de détail qui
+  // chevauchait la grille de miniatures. 760px donne à chaque colonne une
+  // largeur confortable ; max-width garantit malgré tout de toujours laisser
+  // au moins 24px avant le panneau caméra (largeur 82px + marge 32px de
+  // chaque côté), donc jamais de chevauchement ni de débordement, même sur
+  // une fenêtre plus petite.
+  // (width + max-width séparés plutôt que min() : plus large compatibilité
+  // avec les moteurs CEF plus anciens que peut embarquer FiveM.)
+  width: 760px;
+  max-width: calc(100vw - 170px);
   max-height: calc(100vh - 48px);
   display: flex;
   flex-direction: column;
@@ -187,13 +198,41 @@
 // FOOTER
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 .footer {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
   padding: 10px $spacing-md $spacing-md;
   border-top: 1px solid rgba(0, 217, 255, 0.07);
   flex-shrink: 0;
 }
 
+.resetBtn {
+  flex-shrink: 0;
+  padding: 8px $spacing-md !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: $radius-sm !important;
+  color: $text-secondary !important;
+  font-size: $font-size-sm !important;
+  font-weight: $font-weight-semibold !important;
+  letter-spacing: 0.04em !important;
+  cursor: pointer;
+  transition: $transition !important;
+  transform: none !important;
+  box-shadow: none !important;
+
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border-color: rgba(239, 68, 68, 0.28) !important;
+    color: #ff8f8f !important;
+  }
+  &:active:not(:disabled) { transform: scale(0.97) !important; }
+  &:disabled { opacity: 0.35 !important; cursor: not-allowed !important; }
+}
+
 .submitBtn {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   padding: 8px $spacing-lg !important;
   background: linear-gradient(135deg, $accent, $accent-light) !important;
   border: none !important;

@@ -4,6 +4,7 @@
 // → bouton Créer le personnage
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+import { useState } from "react";
 import styles from "./ClothingWindow.module.scss";
 import AssetPickerPage from "../AssetPickerPage/AssetPickerPage";
 import type { ClothingComponents, Props, HeadOverlays } from "../../types/appearance.types";
@@ -34,6 +35,17 @@ export default function ClothingWindow({
   gender, submitting, serverError,
   camControl, onPreview, onClearAll, onSubmit, onClose,
 }: ClothingWindowProps) {
+  // AssetPicker gère ses sélections en interne (useAssetPicker) : onClearAll
+  // vide bien l'état du personnage (Creator), mais ne vide pas à lui seul ce
+  // qu'AssetPicker affiche encore comme "sélectionné". Incrémenter resetKey
+  // force AssetPicker à se remonter proprement (cf. AssetPickerPage.tsx).
+  const [resetKey, setResetKey] = useState(0);
+
+  const handleReset = () => {
+    setResetKey((k) => k + 1);
+    onClearAll();
+  };
+
   return (
     <>
       {/* ── Panneau caméra ── */}
@@ -75,18 +87,27 @@ export default function ClothingWindow({
         {/* ── Erreur serveur ── */}
         {serverError && <div className={styles.error}>{serverError}</div>}
 
-        {/* ── Body : aperçu + catégories/vêtements/accessoires ── */}
+        {/* ── Body : catégories/vêtements/accessoires ── */}
         <div className={styles.body}>
           <AssetPickerPage
             gender={gender}
+            resetKey={resetKey}
             onPreview={onPreview}
             onValidate={onPreview}
-            onClearAll={onClearAll}
           />
         </div>
 
         {/* ── Footer ── */}
         <div className={styles.footer}>
+          <button
+            type="button"
+            className={styles.resetBtn}
+            onClick={handleReset}
+            disabled={submitting}
+            title="Réinitialiser la sélection"
+          >
+            ↺ Reset
+          </button>
           <button
             className={styles.submitBtn}
             onClick={onSubmit}

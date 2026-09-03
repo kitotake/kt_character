@@ -53,21 +53,39 @@ RegisterNetEvent(KT.Events.C2S_GET_OUTFITS, function(data)
     local src = source
     if not data or not data.unique_id then return end
 
-    exports.oxmysql:execute([[
-        SELECT id, name, components, props, is_job_outfit, job_name, job_grade, created_at
-        FROM character_outfits
-        WHERE unique_id = ? AND is_job_outfit = 0
-        ORDER BY created_at DESC
-    ]],
-    { data.unique_id },
-    function(results)
-        results = results or {}
-        for i = 1, #results do
-            results[i].components = Utils.decodeJSON(results[i].components)
-            results[i].props      = Utils.decodeJSON(results[i].props)
+    -- P0.4 : ce handler acceptait n'importe quel unique_id fourni par le
+    -- client sans vérifier qu'il appartient au joueur appelant (contrairement
+    -- à C2S_LOAD_OUTFIT/C2S_DELETE_OUTFIT juste au-dessus, qui font déjà la
+    -- jointure via user_character). Même vérification que le reste du fichier.
+    local license = Identifiers.getLicense(src)
+    if not license then return end
+
+    exports.oxmysql:execute(
+        "SELECT 1 FROM user_character WHERE identifier = ? AND unique_id = ? LIMIT 1",
+        { license, data.unique_id },
+        function(check)
+            if not check or #check == 0 then
+                TriggerClientEvent(KT.Events.S2C_ERROR, src, "Accès refusé")
+                return
+            end
+
+            exports.oxmysql:execute([[
+                SELECT id, name, components, props, is_job_outfit, job_name, job_grade, created_at
+                FROM character_outfits
+                WHERE unique_id = ? AND is_job_outfit = 0
+                ORDER BY created_at DESC
+            ]],
+            { data.unique_id },
+            function(results)
+                results = results or {}
+                for i = 1, #results do
+                    results[i].components = Utils.decodeJSON(results[i].components)
+                    results[i].props      = Utils.decodeJSON(results[i].props)
+                end
+                TriggerClientEvent(KT.Events.S2C_OUTFITS_LIST, src, results)
+            end)
         end
-        TriggerClientEvent(KT.Events.S2C_OUTFITS_LIST, src, results)
-    end)
+    )
 end)
 
 -- ── LOAD ──────────────────────────────────────────────────────────────────
@@ -128,9 +146,12 @@ end)
 AddEventHandler(KT.Events.INTERNAL_CHAR_SELECTED, function(src, characterData)
     if not characterData or not characterData.job then return end
 
+    -- P0.1 : les tenues de métier vivent désormais dans `character_job_outfits`
+    -- (table dédiée, sans lien vers un personnage) plutôt que dans
+    -- `character_outfits` avec un faux unique_id = 'system'.
     exports.oxmysql:execute([[
-        SELECT components, props FROM character_outfits
-        WHERE job_name = ? AND job_grade <= ? AND is_job_outfit = 1
+        SELECT components, props FROM character_job_outfits
+        WHERE job_name = ? AND job_grade <= ?
         ORDER BY job_grade DESC LIMIT 1
     ]],
     { characterData.job, characterData.job_grade or 0 },
@@ -154,16 +175,28 @@ RegisterNetEvent("kt_character:saveJobOutfit", function(data)
         return
     end
 
+    -- P0.1 : table dédiée (job_name, job_grade), plus de unique_id = 'system'
+    -- qui violait la contrainte FK vers `characters` et faisait échouer
+    -- l'INSERT silencieusement (aucun callback ne remontait l'erreur).
     exports.oxmysql:execute([[
-        INSERT INTO character_outfits (unique_id, name, components, props, is_job_outfit, job_name, job_grade)
-        VALUES ('system', ?, ?, ?, 1, ?, ?)
-        ON DUPLICATE KEY UPDATE components = VALUES(components), props = VALUES(props)
+        INSERT INTO character_job_outfits (job_name, job_grade, name, components, props)
+        VALUES (?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE name = VALUES(name), components = VALUES(components), props = VALUES(props)
     ]],
     {
+        data.job_name,
+        data.job_grade or 0,
         data.name or (data.job_name .. "_grade_" .. (data.job_grade or 0)),
         Utils.encodeJSON(data.components),
         Utils.encodeJSON(data.props),
-        data.job_name,
-        data.job_grade or 0,
-    })
+    },
+    function(res)
+        if res and res.affectedRows and res.affectedRows > 0 then
+            Utils.debug("Tenue de métier sauvegardée: " .. data.job_name .. " (grade " .. (data.job_grade or 0) .. ")")
+            TriggerClientEvent(KT.Events.S2C_SUCCESS, src, "Tenue de métier sauvegardée")
+        else
+            Utils.debug("Échec sauvegarde tenue de métier: " .. data.job_name, "WARN")
+            TriggerClientEvent(KT.Events.S2C_ERROR, src, "Erreur sauvegarde tenue de métier")
+        end
+    end)
 end)

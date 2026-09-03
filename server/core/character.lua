@@ -56,10 +56,29 @@ RegisterNetEvent(KT.Events.C2S_CREATE_CHARACTER, function(data)
                 return
             end
 
+            -- P0.2 : limite de personnages appliquée côté serveur.
+            -- La vérification du nombre de personnages existants et la liaison
+            -- (identifier, unique_id) se font en UNE SEULE requête qui lit et
+            -- écrit `user_character` : c'est ce qui rend le contrôle atomique.
+            -- Une garde qui ferait le COUNT dans une requête séparée de l'écriture
+            -- ne suffit pas : vérifié pendant le développement de ce correctif,
+            -- deux créations lancées au même instant pour le même joueur passaient
+            -- alors toutes les deux, chacune ne voyant pas l'écriture de l'autre.
             exports.oxmysql:execute(
-                [[INSERT IGNORE INTO user_character (identifier, unique_id) VALUES (?, ?)]],
-                { license, unique_id },
-                function()
+                [[INSERT IGNORE INTO user_character (identifier, unique_id)
+                  SELECT ?, ? FROM DUAL
+                  WHERE (SELECT COUNT(*) FROM user_character WHERE identifier = ?) < ?]],
+                { license, unique_id, license, KT.Config.MAX_CHARACTERS },
+                function(res2)
+                    if not res2 or not res2.affectedRows or res2.affectedRows == 0 then
+                        -- Limite atteinte (ou course perdue contre une création
+                        -- simultanée) : on retire le personnage créé juste avant
+                        -- pour ne pas laisser de ligne orpheline dans `characters`.
+                        exports.oxmysql:execute("DELETE FROM characters WHERE unique_id = ?", { unique_id })
+                        TriggerClientEvent(KT.Events.S2C_ERROR, src, "Nombre maximum de personnages atteint")
+                        return
+                    end
+
                     local skinData = Utils.encodeJSON({
                         gender       = pedModel,
                         hair         = data.hair         or {},
